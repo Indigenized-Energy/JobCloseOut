@@ -6,12 +6,8 @@
     <title>Job Close Out - Indigenized Energy</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         :root {
             --primary: #D2691E;
             --primary-dark: #8B4513;
@@ -21,24 +17,24 @@
             --text-primary: #1A1A1A;
             --text-secondary: #666666;
         }
-        
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%);
             min-height: 100vh;
             color: var(--text-primary);
         }
-        
+
         /* Header */
         .app-header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
             padding: 20px 0;
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        
+
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
@@ -47,38 +43,48 @@
             align-items: center;
             gap: 16px;
         }
-        
+
         .logo-icon {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
+            color: #fff;
         }
-        
+
         .header-title h1 {
             font-size: 24px;
             font-weight: 700;
-            color: var(--text-primary);
+            color: #fff;
             line-height: 1.2;
         }
-        
+
         .header-title .subtitle {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: rgba(255,255,255,0.85);
             font-weight: 500;
         }
-        
+
+        .header-logo {
+            margin-left: auto;
+            height: 44px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+        }
+
         /* Container */
         .container {
             max-width: 1200px;
             margin: 32px auto;
             padding: 0 24px 40px;
         }
-        
+
         /* Progress */
         .progress-container {
             background: white;
@@ -87,7 +93,7 @@
             margin-bottom: 32px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
-        
+
         .progress-label {
             font-size: 14px;
             font-weight: 600;
@@ -96,28 +102,28 @@
             display: flex;
             justify-content: space-between;
         }
-        
+
         .progress-percent {
             font-size: 20px;
             font-weight: 700;
             color: var(--primary);
         }
-        
+
         .progress-bar {
             height: 12px;
             background: #F5F5F5;
             border-radius: 12px;
             overflow: hidden;
         }
-        
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #6b8e23, #8fbc8f);
             border-radius: 12px;
             transition: width 0.3s ease;
-            min-width: 80px;
+            min-width: 0px;
         }
-        
+
         /* Sections */
         .section {
             background: white;
@@ -126,7 +132,7 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
             overflow: hidden;
         }
-        
+
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -136,17 +142,15 @@
             background: linear-gradient(to right, #FAFAFA 0%, #FFFFFF 100%);
             border-bottom: 2px solid #E0E0E0;
         }
-        
-        .section-header:hover {
-            background: #F5F5F5;
-        }
-        
+
+        .section-header:hover { background: #F5F5F5; }
+
         .section-title {
             font-size: 20px;
             color: var(--text-primary);
             font-weight: 700;
         }
-        
+
         .section-status {
             background: var(--warning);
             color: white;
@@ -156,25 +160,19 @@
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
-        .section-status.complete {
-            background: var(--success);
-        }
-        
+
+        .section-status.complete { background: var(--success); }
+
         .section-content {
             display: none;
             padding: 32px 24px;
         }
-        
-        .section-content.active {
-            display: block;
-        }
-        
+
+        .section-content.active { display: block; }
+
         /* Forms */
-        .form-group {
-            margin-bottom: 28px;
-        }
-        
+        .form-group { margin-bottom: 28px; }
+
         label {
             display: block;
             font-weight: 600;
@@ -182,7 +180,7 @@
             color: var(--text-primary);
             font-size: 15px;
         }
-        
+
         input[type="text"],
         input[type="number"],
         input[type="date"],
@@ -197,7 +195,7 @@
             transition: all 0.2s;
             background: white;
         }
-        
+
         input:focus,
         textarea:focus,
         select:focus {
@@ -205,19 +203,16 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(210,105,30,0.1);
         }
-        
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
+
+        textarea { min-height: 100px; resize: vertical; }
+
         small {
             display: block;
             margin-top: 8px;
             color: var(--text-secondary);
             font-size: 13px;
         }
-        
+
         /* Buttons */
         .photo-btn,
         .btn-primary {
@@ -233,13 +228,13 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             font-family: 'Inter', sans-serif;
         }
-        
+
         .photo-btn:hover,
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
-        
+
         /* Info Boxes */
         .info-box {
             background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
@@ -249,7 +244,7 @@
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
+
         .info-box strong {
             display: block;
             color: var(--primary-dark);
@@ -257,11 +252,11 @@
             margin-bottom: 12px;
             font-weight: 700;
         }
-        
+
         .status-good { color: var(--success); font-weight: 600; }
         .status-warning { color: var(--warning); font-weight: 600; }
         .status-bad { color: #C62828; font-weight: 600; }
-        
+
         /* Checkboxes */
         .checkbox-group {
             display: grid;
@@ -269,7 +264,7 @@
             gap: 16px;
             margin-top: 12px;
         }
-        
+
         .checkbox-item {
             display: flex;
             align-items: center;
@@ -278,20 +273,20 @@
             background: #FAFAFA;
             border-radius: 8px;
         }
-        
+
         .checkbox-item input {
             width: 20px;
             height: 20px;
             cursor: pointer;
         }
-        
+
         .checkbox-item label {
             margin: 0;
             font-weight: 500;
             cursor: pointer;
             font-size: 14px;
         }
-        
+
         /* Photo Gallery */
         .photo-gallery {
             display: grid;
@@ -299,7 +294,7 @@
             gap: 16px;
             margin-top: 16px;
         }
-        
+
         .photo-item {
             position: relative;
             aspect-ratio: 1;
@@ -307,13 +302,13 @@
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
-        
+
         .photo-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .photo-delete {
             position: absolute;
             top: 8px;
@@ -327,7 +322,7 @@
             font-size: 20px;
             cursor: pointer;
         }
-        
+
         /* Export */
         .export-container {
             text-align: center;
@@ -337,7 +332,7 @@
             border-radius: 16px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
-        
+
         .btn-export {
             background: linear-gradient(135deg, var(--success) 0%, #1B5E20 100%);
             color: white;
@@ -351,51 +346,44 @@
             font-family: 'Inter', sans-serif;
             margin: 0 10px;
         }
-        
+
         .btn-export:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.16);
         }
-        
-        .btn-clear {
-            background: linear-gradient(135deg, #757575 0%, #424242 100%);
-        }
-        
+
+        .btn-clear { background: linear-gradient(135deg, #757575 0%, #424242 100%); }
+
         /* Mobile */
         @media (max-width: 768px) {
-            .container {
-                padding: 0 16px 32px;
-                margin: 16px auto;
-            }
-            
-            .header-content {
-                padding: 0 16px;
-            }
-            
-            .section-header,
-            .section-content {
-                padding: 20px 16px;
-            }
-            
-            .checkbox-group {
-                grid-template-columns: 1fr;
-            }
+            .container { padding: 0 16px 32px; margin: 16px auto; }
+            .header-content { padding: 0 16px; }
+            .section-header, .section-content { padding: 20px 16px; }
+            .checkbox-group { grid-template-columns: 1fr; }
+            .header-logo { height: 32px; }
         }
-        
-        input[type="file"] {
-            display: none;
-        }
+
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
     <!-- Header -->
     <div class="app-header">
         <div class="header-content">
-            <div class="logo-icon">✅</div>
-            <div class="header-title">
-                <h1>Job Close Out Form</h1>
-                <span class="subtitle">Indigenized Energy</span>
+            <div style="display:flex; align-items:center; gap:16px;">
+                <div class="logo-icon">✅</div>
+                <div class="header-title">
+                    <h1>Job Close Out Form</h1>
+                    <span class="subtitle">Indigenized Energy</span>
+                </div>
             </div>
+
+            <!-- IMPORTANT: your repo shows images/ie_logo.png (lowercase) -->
+            <img
+                src="images/ie_logo.png"
+                alt="Indigenized Energy logo"
+                class="header-logo"
+            />
         </div>
     </div>
 
@@ -410,7 +398,6 @@
                 <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
             </div>
         </div>
-
 
         <!-- Connectivity + Data Handling -->
         <div class="progress-container" id="connectivity-container" style="margin-top:-12px;">
@@ -440,13 +427,15 @@
                     <label>Site Name *</label>
                     <input type="text" id="site-name" placeholder="Enter site/project name">
                 </div>
+
                 <div class="form-group">
                     <label>GPS Coordinates</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <input type="text" id="gps-coords" placeholder="Will be captured automatically" readonly style="flex: 1;">
-                        <button class="photo-btn" onclick="captureGPS()" style="margin: 0;">📍 Get Location</button>
+                        <button class="photo-btn" onclick="captureGPS()" style="margin: 0;" type="button">📍 Get Location</button>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label>Tribal Affiliation *</label>
                     <select id="tribal-affiliation">
@@ -467,30 +456,37 @@
                         <option value="Other">Other</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>Installation Address *</label>
                     <input type="text" id="install-address" placeholder="Street address">
                 </div>
+
                 <div class="form-group">
                     <label>City, State, ZIP</label>
                     <input type="text" id="city-state-zip" placeholder="City, State, ZIP">
                 </div>
+
                 <div class="form-group">
                     <label>Start Date *</label>
                     <input type="date" id="start-date">
                 </div>
+
                 <div class="form-group">
                     <label>Completion Date *</label>
                     <input type="date" id="completion-date">
                 </div>
+
                 <div class="form-group">
                     <label>Electrical Contractor's Name *</label>
                     <input type="text" id="contractor-name" placeholder="Name of electrical contractor">
                 </div>
+
                 <div class="form-group">
                     <label>Electrical Contractor's POC (Point of Contact)</label>
                     <input type="text" id="contractor-poc" placeholder="Contact person name and phone">
                 </div>
+
                 <div class="form-group">
                     <label>Installation Type *</label>
                     <div class="checkbox-group" style="display: block;">
@@ -518,40 +514,43 @@
                     <label>System Size (kW DC) *</label>
                     <input type="number" step="0.1" id="system-size" placeholder="e.g., 8.5">
                 </div>
+
                 <div class="form-group">
                     <label>Number of Solar Panels *</label>
                     <input type="number" id="num-panels" placeholder="Total panel count">
                 </div>
+
                 <div class="form-group">
                     <label>Panel Make & Model *</label>
                     <input type="text" id="panel-model" placeholder="e.g., LG 400W Neon2">
                 </div>
+
                 <div class="form-group">
                     <label>Panel Wattage (each)</label>
                     <input type="number" id="panel-wattage" placeholder="e.g., 400">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Number of Inverters *</label>
                     <input type="number" id="num-inverters" placeholder="How many inverters?" onchange="generateInverterFields()" min="0">
                     <small>Enter number to generate fields for each inverter</small>
                 </div>
-                
+
                 <div id="inverters-container"></div>
-                
+
                 <div class="form-group">
                     <label>Racking System</label>
                     <input type="text" id="racking-system" placeholder="e.g., IronRidge XR100">
                 </div>
-                
+
                 <div class="form-group">
                     <label>Number of Battery Systems</label>
                     <input type="number" id="num-batteries" placeholder="0 if no batteries" onchange="generateBatteryFields()" min="0">
                     <small>Enter number to generate fields for each battery (0 if none)</small>
                 </div>
-                
+
                 <div id="batteries-container"></div>
-</div>
+            </div>
         </div>
 
         <!-- Visual Verification Checklist -->
@@ -646,7 +645,7 @@
 
                 <div class="form-group">
                     <label>Production Screenshot/Photo *</label>
-                    <button class="photo-btn" onclick="capturePhoto('production-screen')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('production-screen')" type="button">📷 Take Photo</button>
                     <input type="file" id="production-screen-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'production-screen')">
                     <div class="photo-gallery" id="production-screen-gallery"></div>
                     <small>Screenshot of monitoring app or photo of inverter display showing production</small>
@@ -755,7 +754,7 @@
                 </div>
                 <div class="form-group">
                     <label>Final Inspection Photos</label>
-                    <button class="photo-btn" onclick="capturePhoto('inspection')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('inspection')" type="button">📷 Take Photo</button>
                     <input type="file" id="inspection-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inspection')">
                     <div class="photo-gallery" id="inspection-gallery"></div>
                 </div>
@@ -776,42 +775,42 @@
 
                 <div class="form-group">
                     <label>Array Overview (wide shot of all panels) *</label>
-                    <button class="photo-btn" onclick="capturePhoto('array-overview')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('array-overview')" type="button">📷 Take Photo</button>
                     <input type="file" id="array-overview-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'array-overview')">
                     <div class="photo-gallery" id="array-overview-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Array Close-Up *</label>
-                    <button class="photo-btn" onclick="capturePhoto('array-closeup')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('array-closeup')" type="button">📷 Take Photo</button>
                     <input type="file" id="array-closeup-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'array-closeup')">
                     <div class="photo-gallery" id="array-closeup-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Inverter Installation *</label>
-                    <button class="photo-btn" onclick="capturePhoto('inverter')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('inverter')" type="button">📷 Take Photo</button>
                     <input type="file" id="inverter-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inverter')">
                     <div class="photo-gallery" id="inverter-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Main Panel/Breaker *</label>
-                    <button class="photo-btn" onclick="capturePhoto('main-panel')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('main-panel')" type="button">📷 Take Photo</button>
                     <input type="file" id="main-panel-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'main-panel')">
                     <div class="photo-gallery" id="main-panel-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>AC Disconnect</label>
-                    <button class="photo-btn" onclick="capturePhoto('disconnect')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('disconnect')" type="button">📷 Take Photo</button>
                     <input type="file" id="disconnect-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'disconnect')">
                     <div class="photo-gallery" id="disconnect-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Labels & Placards *</label>
-                    <button class="photo-btn" onclick="capturePhoto('labels')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('labels')" type="button">📷 Take Photo</button>
                     <input type="file" id="labels-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'labels')">
                     <div class="photo-gallery" id="labels-gallery"></div>
                     <small>Photo of all required warning labels and placards</small>
@@ -819,21 +818,21 @@
 
                 <div class="form-group">
                     <label>Roof Flashing/Penetrations</label>
-                    <button class="photo-btn" onclick="capturePhoto('flashing')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('flashing')" type="button">📷 Take Photo</button>
                     <input type="file" id="flashing-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'flashing')">
                     <div class="photo-gallery" id="flashing-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Battery System (if applicable)</label>
-                    <button class="photo-btn" onclick="capturePhoto('battery')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('battery')" type="button">📷 Take Photo</button>
                     <input type="file" id="battery-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'battery')">
                     <div class="photo-gallery" id="battery-gallery"></div>
                 </div>
 
                 <div class="form-group">
                     <label>Monitoring Display</label>
-                    <button class="photo-btn" onclick="capturePhoto('monitoring')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('monitoring')" type="button">📷 Take Photo</button>
                     <input type="file" id="monitoring-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'monitoring')">
                     <div class="photo-gallery" id="monitoring-gallery"></div>
                     <small>Screenshot or photo of monitoring system showing production</small>
@@ -841,14 +840,13 @@
 
                 <div class="form-group">
                     <label>Additional Photos</label>
-                    <button class="photo-btn" onclick="capturePhoto('additional')">📷 Take Photo</button>
+                    <button class="photo-btn" onclick="capturePhoto('additional')" type="button">📷 Take Photo</button>
                     <input type="file" id="additional-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'additional')">
                     <div class="photo-gallery" id="additional-gallery"></div>
                 </div>
             </div>
         </div>
 
-        
         <!-- Monitoring & Communications -->
         <div class="section">
             <div class="section-header" onclick="toggleSection('monitoring')">
@@ -1138,7 +1136,6 @@
             </div>
         </div>
 
-
         <!-- Upload Prep -->
         <div class="section">
             <div class="section-header" onclick="toggleSection('upload-prep')">
@@ -1177,9 +1174,10 @@
                     <label for="clear-after-export" style="margin:0;">Clear saved progress on this device after exporting</label>
                 </div>
             </div>
-<button class="btn-export" onclick="generateReport()">📄 Generate Report</button>
-            <button class="btn-export" onclick="saveProgress()">💾 Save Progress</button>
-            <button class="btn-export btn-clear" onclick="clearForm()">🗑️ Clear Form</button>
+
+            <button class="btn-export" onclick="generateReport()" type="button">📄 Generate Report</button>
+            <button class="btn-export" onclick="saveProgress()" type="button">💾 Save Progress</button>
+            <button class="btn-export btn-clear" onclick="clearForm()" type="button">🗑️ Clear Form</button>
         </div>
     </div>
 
@@ -1187,11 +1185,14 @@
         // Set today's date on load
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('completion-date').value = today;
-            document.getElementById('signature-date').value = today;
-            document.getElementById('signoff-date').value = today;
+            const completion = document.getElementById('completion-date');
+            const signature = document.getElementById('signature-date');
+            const signoff = document.getElementById('signoff-date');
 
-            // Initialize connectivity banner
+            if (completion && !completion.value) completion.value = today;
+            if (signature && !signature.value) signature.value = today;
+            if (signoff && !signoff.value) signoff.value = today;
+
             updateConnectivityStatus();
 
             // Ready-for-upload timestamp
@@ -1201,6 +1202,7 @@
                 const savedReady = localStorage.getItem('jcoReadyTimestamp');
                 if (savedReady) {
                     readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
+                    readyBox.checked = true;
                 }
                 readyBox.addEventListener('change', () => {
                     if (readyBox.checked) {
@@ -1214,9 +1216,9 @@
                 });
             }
 
+            updateProgress();
         });
 
-        
         // Connectivity / Offline-first status
         function updateConnectivityStatus() {
             const statusEl = document.getElementById('connectivity-status');
@@ -1233,7 +1235,6 @@
 
         window.addEventListener('online', updateConnectivityStatus);
         window.addEventListener('offline', updateConnectivityStatus);
-
 
         // Photo storage
         const photos = {
@@ -1263,6 +1264,7 @@
                     const lat = position.coords.latitude.toFixed(6);
                     const lon = position.coords.longitude.toFixed(6);
                     document.getElementById('gps-coords').value = `${lat}, ${lon}`;
+                    updateProgress();
                 },
                 function(error) {
                     alert('Unable to get location: ' + error.message);
@@ -1276,9 +1278,8 @@
             const container = document.getElementById('inverters-container');
             container.innerHTML = '';
 
-            if (num === 0) return;
-            if (num < 0) {
-                document.getElementById('num-inverters').value = 0;
+            if (num <= 0) {
+                updateProgress();
                 return;
             }
 
@@ -1287,27 +1288,27 @@
                 inverterDiv.style.cssText = 'background: #FFF8E1; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #DEB887;';
                 inverterDiv.innerHTML = `
                     <h4 style="color: #8B4513; margin-bottom: 15px;">Inverter ${i}</h4>
-                    
+
                     <div class="form-group">
                         <label>Make & Model *</label>
-                        <input type="text" id="inverter-${i}-model" placeholder="e.g., Enphase IQ8+" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <input type="text" id="inverter-${i}-model" placeholder="e.g., Enphase IQ8+" />
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Serial Number</label>
-                        <input type="text" id="inverter-${i}-serial" placeholder="Serial number" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <input type="text" id="inverter-${i}-serial" placeholder="Serial number" />
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Serial Number Photo</label>
                         <button class="photo-btn" onclick="capturePhoto('inverter-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
                         <input type="file" id="inverter-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inverter-${i}-serial')">
                         <div class="photo-gallery" id="inverter-${i}-serial-gallery"></div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Type</label>
-                        <select id="inverter-${i}-type" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <select id="inverter-${i}-type">
                             <option value="">Select type</option>
                             <option value="microinverter">Microinverter</option>
                             <option value="string">String Inverter</option>
@@ -1315,20 +1316,18 @@
                             <option value="optimizer">Power Optimizer</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Current Output (W)</label>
-                        <input type="number" id="inverter-${i}-output" placeholder="Current power output" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
-                        <small style="color: #666;">Reading from inverter display at time of closeout</small>
+                        <input type="number" id="inverter-${i}-output" placeholder="Current power output" />
+                        <small>Reading from inverter display at time of closeout</small>
                     </div>
                 `;
                 container.appendChild(inverterDiv);
-                
-                // Initialize photo storage for this inverter
-                if (!photos[`inverter-${i}-serial`]) {
-                    photos[`inverter-${i}-serial`] = [];
-                }
+
+                if (!photos[`inverter-${i}-serial`]) photos[`inverter-${i}-serial`] = [];
             }
+
             updateProgress();
         }
 
@@ -1338,9 +1337,8 @@
             const container = document.getElementById('batteries-container');
             container.innerHTML = '';
 
-            if (num === 0) return;
-            if (num < 0) {
-                document.getElementById('num-batteries').value = 0;
+            if (num <= 0) {
+                updateProgress();
                 return;
             }
 
@@ -1349,22 +1347,22 @@
                 batteryDiv.style.cssText = 'background: #F0FFF0; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #90EE90;';
                 batteryDiv.innerHTML = `
                     <h4 style="color: #2E7D32; margin-bottom: 15px;">Battery ${i}</h4>
-                    
+
                     <div class="form-group">
                         <label>Make & Model *</label>
-                        <input type="text" id="battery-${i}-model" placeholder="e.g., Tesla Powerwall 2" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <input type="text" id="battery-${i}-model" placeholder="e.g., Tesla Powerwall 2" />
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Capacity (kWh)</label>
-                        <input type="number" step="0.1" id="battery-${i}-capacity" placeholder="e.g., 13.5" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <input type="number" step="0.1" id="battery-${i}-capacity" placeholder="e.g., 13.5" />
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Serial Number</label>
-                        <input type="text" id="battery-${i}-serial" placeholder="Serial number" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <input type="text" id="battery-${i}-serial" placeholder="Serial number" />
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Serial Number Photo</label>
                         <button class="photo-btn" onclick="capturePhoto('battery-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
@@ -1373,38 +1371,35 @@
                     </div>
                 `;
                 container.appendChild(batteryDiv);
-                
-                // Initialize photo storage for this battery
-                if (!photos[`battery-${i}-serial`]) {
-                    photos[`battery-${i}-serial`] = [];
-                }
+
+                if (!photos[`battery-${i}-serial`]) photos[`battery-${i}-serial`] = [];
             }
+
             updateProgress();
         }
 
         // Toggle section
         function toggleSection(sectionId) {
             const content = document.getElementById('content-' + sectionId);
-            content.classList.toggle('active');
+            if (content) content.classList.toggle('active');
         }
 
         // Capture photo
         function capturePhoto(type) {
-            document.getElementById(type + '-input').click();
+            const input = document.getElementById(type + '-input');
+            if (input) input.click();
         }
 
         // Handle photo upload
         function handlePhotoUpload(event, type) {
             const files = event.target.files;
-            if (files.length === 0) return;
+            if (!files || files.length === 0) return;
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    photos[type].push({
-                        data: e.target.result,
-                        name: file.name
-                    });
+                    if (!photos[type]) photos[type] = [];
+                    photos[type].push({ data: e.target.result, name: file.name });
                     displayPhotos(type);
                     updateProgress();
                 };
@@ -1420,7 +1415,7 @@
             if (!gallery) return;
 
             gallery.innerHTML = '';
-            photos[type].forEach((photo, index) => {
+            (photos[type] || []).forEach((photo, index) => {
                 const item = document.createElement('div');
                 item.className = 'photo-item';
                 item.innerHTML = `
@@ -1433,24 +1428,20 @@
 
         // Delete photo
         function deletePhoto(type, index) {
-            photos[type].splice(index, 1);
+            (photos[type] || []).splice(index, 1);
             displayPhotos(type);
             updateProgress();
         }
 
         // Update progress
         function updateProgress() {
-            let completed = 0;
-            let total = 9; // Number of main sections // Number of main sections
-
-            // Check job info
+            // Section statuses (nice UX)
             if (document.getElementById('site-name').value &&
                 document.getElementById('tribal-affiliation').value &&
                 document.getElementById('install-address').value &&
                 document.getElementById('start-date').value &&
                 document.getElementById('completion-date').value &&
                 document.getElementById('contractor-name').value) {
-                completed++;
                 document.getElementById('status-job-info').textContent = 'Complete';
                 document.getElementById('status-job-info').classList.add('complete');
             } else {
@@ -1458,12 +1449,10 @@
                 document.getElementById('status-job-info').classList.remove('complete');
             }
 
-            // Check system details
             if (document.getElementById('system-size').value &&
                 document.getElementById('num-panels').value &&
                 document.getElementById('panel-model').value &&
                 document.getElementById('num-inverters').value) {
-                completed++;
                 document.getElementById('status-system-details').textContent = 'Complete';
                 document.getElementById('status-system-details').classList.add('complete');
             } else {
@@ -1471,11 +1460,9 @@
                 document.getElementById('status-system-details').classList.remove('complete');
             }
 
-            // Check verification checklist
             const checkboxes = document.querySelectorAll('#content-verification input[type="checkbox"]');
             const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
             if (checkedCount >= 5) {
-                completed++;
                 document.getElementById('status-verification').textContent = 'Complete';
                 document.getElementById('status-verification').classList.add('complete');
             } else {
@@ -1483,10 +1470,8 @@
                 document.getElementById('status-verification').classList.remove('complete');
             }
 
-            // Check performance/readings
             if (document.getElementById('current-production').value &&
-                photos['production-screen'].length > 0) {
-                completed++;
+                (photos['production-screen'] || []).length > 0) {
                 document.getElementById('status-performance').textContent = 'Complete';
                 document.getElementById('status-performance').classList.add('complete');
             } else {
@@ -1494,9 +1479,7 @@
                 document.getElementById('status-performance').classList.remove('complete');
             }
 
-            // Check inspections
             if (document.getElementById('electrical-inspection').value) {
-                completed++;
                 document.getElementById('status-inspections').textContent = 'Complete';
                 document.getElementById('status-inspections').classList.add('complete');
             } else {
@@ -1504,13 +1487,11 @@
                 document.getElementById('status-inspections').classList.remove('complete');
             }
 
-            // Check photos (require key photos)
-            if (photos['array-overview'].length > 0 &&
-                photos['array-closeup'].length > 0 &&
-                photos['inverter'].length > 0 &&
-                photos['main-panel'].length > 0 &&
-                photos['labels'].length > 0) {
-                completed++;
+            if ((photos['array-overview'] || []).length > 0 &&
+                (photos['array-closeup'] || []).length > 0 &&
+                (photos['inverter'] || []).length > 0 &&
+                (photos['main-panel'] || []).length > 0 &&
+                (photos['labels'] || []).length > 0) {
                 document.getElementById('status-photos').textContent = 'Complete';
                 document.getElementById('status-photos').classList.add('complete');
             } else {
@@ -1518,13 +1499,10 @@
                 document.getElementById('status-photos').classList.remove('complete');
             }
 
-            
-            // Check monitoring
             const monitoringChecks = document.querySelectorAll('#content-monitoring input[type="checkbox"]:checked').length;
             if (document.getElementById('monitoring-platform').value &&
                 document.getElementById('monitoring-status').value &&
                 monitoringChecks >= 3) {
-                completed++;
                 document.getElementById('status-monitoring').textContent = 'Complete';
                 document.getElementById('status-monitoring').classList.add('complete');
             } else {
@@ -1532,12 +1510,10 @@
                 document.getElementById('status-monitoring').classList.remove('complete');
             }
 
-            // Check customer handoff
             const trainingChecks = document.querySelectorAll('#content-customer-handoff input[type="checkbox"]:checked').length;
-            if (trainingChecks >= 5 && 
+            if (trainingChecks >= 5 &&
                 document.getElementById('customer-signature').value &&
                 document.getElementById('system-producing').value) {
-                completed++;
                 document.getElementById('status-customer-handoff').textContent = 'Complete';
                 document.getElementById('status-customer-handoff').classList.add('complete');
             } else {
@@ -1545,12 +1521,10 @@
                 document.getElementById('status-customer-handoff').classList.remove('complete');
             }
 
-            // Check sign-off
             const certChecks = document.querySelectorAll('#content-signoff input[type="checkbox"]:checked').length;
             if (certChecks >= 5 &&
                 document.getElementById('installer-signature').value &&
                 document.getElementById('signoff-date').value) {
-                completed++;
                 document.getElementById('status-signoff').textContent = 'Complete';
                 document.getElementById('status-signoff').classList.add('complete');
             } else {
@@ -1558,18 +1532,14 @@
                 document.getElementById('status-signoff').classList.remove('complete');
             }
 
-            
-            // Progress bar tracks completion of REQUIRED (*) items only
+            // Progress bar = required items only
             const required = [];
-
             const hasValue = (id) => {
                 const el = document.getElementById(id);
                 if (!el) return false;
-                // For number/date/text/select: treat "0" as valid if present
                 return (el.value !== null && el.value !== undefined && String(el.value).trim() !== '');
             };
 
-            // Required fields (marked with * in the form)
             required.push(hasValue('site-name'));
             required.push(hasValue('tribal-affiliation'));
             required.push(hasValue('install-address'));
@@ -1582,25 +1552,21 @@
             required.push(hasValue('panel-model'));
             required.push(hasValue('num-inverters'));
 
-            // If inverters are generated, each inverter model is required (*)
             const invCount = parseInt(document.getElementById('num-inverters').value) || 0;
             if (invCount > 0) {
-                for (let i = 1; i <= invCount; i++) {
-                    required.push(hasValue(`inverter-${i}-model`));
-                }
+                for (let i = 1; i <= invCount; i++) required.push(hasValue(`inverter-${i}-model`));
             }
 
             required.push(hasValue('current-production'));
-            required.push(photos['production-screen'].length > 0);
+            required.push((photos['production-screen'] || []).length > 0);
 
             required.push(hasValue('electrical-inspection'));
 
-            // Required photos
-            required.push(photos['array-overview'].length > 0);
-            required.push(photos['array-closeup'].length > 0);
-            required.push(photos['inverter'].length > 0);
-            required.push(photos['main-panel'].length > 0);
-            required.push(photos['labels'].length > 0);
+            required.push((photos['array-overview'] || []).length > 0);
+            required.push((photos['array-closeup'] || []).length > 0);
+            required.push((photos['inverter'] || []).length > 0);
+            required.push((photos['main-panel'] || []).length > 0);
+            required.push((photos['labels'] || []).length > 0);
 
             required.push(hasValue('customer-signature'));
             required.push(hasValue('system-producing'));
@@ -1614,18 +1580,15 @@
 
             const progressFill = document.getElementById('progress-fill');
             const progressText = document.getElementById('progress-text');
-            progressFill.style.width = percent + '%';
-            progressText.textContent = percent + '%';
-}
+            if (progressFill) progressFill.style.width = percent + '%';
+            if (progressText) progressText.textContent = percent + '%';
+        }
 
-        // Add event listeners to all inputs
         document.querySelectorAll('input, select, textarea').forEach(element => {
             element.addEventListener('change', updateProgress);
             element.addEventListener('input', updateProgress);
         });
 
-        // Generate report
-        
         // Generate report
         function generateReport() {
             const getVal = (id) => {
@@ -1635,7 +1598,6 @@
                 return el.value || '';
             };
 
-            // Build inverter details dynamically (if any)
             const numInv = parseInt(getVal('num-inverters')) || 0;
             const inverters = [];
             for (let i = 1; i <= numInv; i++) {
@@ -1649,7 +1611,6 @@
                 });
             }
 
-            // Build battery details dynamically (if any)
             const numBat = parseInt(getVal('num-batteries')) || 0;
             const batteries = [];
             for (let i = 1; i <= numBat; i++) {
@@ -1686,10 +1647,10 @@
                     panelMakeModel: getVal('panel-model'),
                     panelWattageEach: getVal('panel-wattage'),
                     numberOfInverters: getVal('num-inverters'),
-                    inverters: inverters,
+                    inverters,
                     rackingSystem: getVal('racking-system'),
                     numberOfBatteries: getVal('num-batteries'),
-                    batteries: batteries
+                    batteries
                 },
                 monitoring: {
                     platform: getVal('monitoring-platform'),
@@ -1780,7 +1741,7 @@
                     totalLaborHours: getVal('labor-hours'),
                     finalComments: getVal('final-comments')
                 },
-                photos: photos
+                photos
             };
 
             const safeName = (getVal('site-name') || 'site').toString().trim().replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g,'');
@@ -1790,104 +1751,98 @@
             const dataStr = JSON.stringify(data, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
+
             const link = document.createElement('a');
             link.href = url;
             link.download = fileName;
             link.click();
 
-            // Optional auto-clear after export
             const clearAfter = document.getElementById('clear-after-export');
             if (clearAfter && clearAfter.checked) {
                 localStorage.removeItem('jcoProgress');
                 localStorage.removeItem('jcoReadyTimestamp');
-                // Clear form UI too
-                try { clearForm(); } catch(e) { /* ignore */ }
+                try { clearForm(true); } catch(e) {}
             }
 
             alert('Job Close Out report generated! File downloaded.');
         }
 
-
         // Save progress
         function saveProgress() {
-            const data = {
-                // Save all form data
-                timestamp: new Date().toISOString()
-            };
+            const data = { timestamp: new Date().toISOString() };
 
-            // Get all input values
             document.querySelectorAll('input, select, textarea').forEach(element => {
-                if (element.type === 'checkbox') {
-                    data[element.id] = element.checked;
-                } else if (element.type !== 'file') {
-                    data[element.id] = element.value;
-                }
+                if (!element.id) return;
+                if (element.type === 'checkbox') data[element.id] = element.checked;
+                else if (element.type !== 'file') data[element.id] = element.value;
             });
 
             data.photos = photos;
-
             localStorage.setItem('jcoProgress', JSON.stringify(data));
             alert('Progress saved! You can close and return later.');
         }
 
         // Clear form
-        function clearForm() {
-            if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-                return;
-            }
+        function clearForm(silent = false) {
+            if (!silent && !confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
 
             document.querySelectorAll('input, select, textarea').forEach(element => {
-                if (element.type === 'checkbox') {
-                    element.checked = false;
-                } else if (element.type !== 'file') {
-                    element.value = '';
-                }
+                if (element.type === 'checkbox') element.checked = false;
+                else if (element.type !== 'file') element.value = '';
             });
 
-            // Clear photos
             for (let type in photos) {
                 photos[type] = [];
                 displayPhotos(type);
             }
 
             localStorage.removeItem('jcoProgress');
+            localStorage.removeItem('jcoReadyTimestamp');
+
+            // Reset dates
+            const today = new Date().toISOString().split('T')[0];
+            const completion = document.getElementById('completion-date');
+            const signature = document.getElementById('signature-date');
+            const signoff = document.getElementById('signoff-date');
+            if (completion) completion.value = today;
+            if (signature) signature.value = today;
+            if (signoff) signoff.value = today;
+
             updateProgress();
-            alert('Form cleared!');
+            if (!silent) alert('Form cleared!');
         }
 
-        // Load progress on page load
+        // Restore saved progress (no prompts, just restore if found)
         window.addEventListener('load', function() {
             updateConnectivityStatus();
+
             const saved = localStorage.getItem('jcoProgress');
-            if (saved && confirm('Found saved progress. Would you like to restore it?')) {
+            if (saved) {
                 const data = JSON.parse(saved);
 
-                // Restore all inputs
                 for (let key in data) {
                     const element = document.getElementById(key);
-                    if (element) {
-                        if (element.type === 'checkbox') {
-                            element.checked = data[key];
-                        } else if (element.type !== 'file') {
-                            element.value = data[key];
-                        }
-                    }
+                    if (!element) continue;
+                    if (element.type === 'checkbox') element.checked = !!data[key];
+                    else if (element.type !== 'file') element.value = data[key];
                 }
 
-                // Restore photos
                 if (data.photos) {
                     for (let type in data.photos) {
-                        photos[type] = data.photos[type];
+                        photos[type] = data.photos[type] || [];
                         displayPhotos(type);
                     }
                 }
 
+                // Ready timestamp display
+                const readyTs = document.getElementById('ready-timestamp');
+                const savedReady = localStorage.getItem('jcoReadyTimestamp');
+                if (readyTs && savedReady) readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
+
                 updateProgress();
             }
         });
-
-        // Initial progress update
-        updateProgress();
     </script>
 </body>
 </html>
+
