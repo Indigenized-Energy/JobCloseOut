@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Job Close Out - Indigenized Energy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #D2691E;
+            --primary-dark: #8B4513;
+            --primary-light: #DEB887;
+            --success: #2E7D32;
+            --warning: #F57C00;
+            --text-primary: #1A1A1A;
+            --text-secondary: #666666;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFE0B2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        /* Header */
+        .app-header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        
+        .header-title .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 24px 40px;
+        }
+        
+        /* Progress */
+        .progress-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .progress-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .progress-percent {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6b8e23, #8fbc8f);
+            border-radius: 12px;
+            transition: width 0.3s ease;
+            min-width: 80px;
+        }
+        
+        /* Sections */
+        .section {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            cursor: pointer;
+            background: linear-gradient(to right, #FAFAFA 0%, #FFFFFF 100%);
+            border-bottom: 2px solid #E0E0E0;
+        }
+        
+        .section-header:hover {
+            background: #F5F5F5;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        
+        .section-status {
+            background: var(--warning);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .section-status.complete {
+            background: var(--success);
+        }
+        
+        .section-content {
+            display: none;
+            padding: 32px 24px;
+        }
+        
+        .section-content.active {
+            display: block;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 28px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(210,105,30,0.1);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        small {
+            display: block;
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        /* Buttons */
+        .photo-btn,
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .photo-btn:hover,
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .info-box strong {
+            display: block;
+            color: var(--primary-dark);
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .status-good { color: var(--success); font-weight: 600; }
+        .status-warning { color: var(--warning); font-weight: 600; }
+        .status-bad { color: #C62828; font-weight: 600; }
+        
+        /* Checkboxes */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #FAFAFA;
+            border-radius: 8px;
+        }
+        
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* Photo Gallery */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(198,40,40,0.9);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Export */
+        .export-container {
+            text-align: center;
+            margin-top: 40px;
+            padding: 32px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, var(--success) 0%, #1B5E20 100%);
+            color: white;
+            border: none;
+            padding: 18px 48px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            font-family: 'Inter', sans-serif;
+            margin: 0 10px;
+        }
+        
+        .btn-export:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #757575 0%, #424242 100%);
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px 32px;
+                margin: 16px auto;
+            }
+            
+            .header-content {
+                padding: 0 16px;
+            }
+            
+            .section-header,
+            .section-content {
+                padding: 20px 16px;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="app-header">
+        <div class="header-content">
+            <div class="logo-icon">✅</div>
+            <div class="header-title">
+                <h1>Job Close Out Form</h1>
+                <span class="subtitle">Indigenized Energy</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Completion Progress</span>
+                <span class="progress-percent" id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+
+        <!-- Connectivity + Data Handling -->
+        <div class="progress-container" id="connectivity-container" style="margin-top:-12px;">
+            <div class="progress-label" style="align-items:center;">
+                <span>
+                    <strong>Connectivity:</strong>
+                    <span id="connectivity-status" class="status-warning">Checking…</span>
+                    <span id="connectivity-note" style="margin-left:10px; color: var(--text-secondary); font-weight: 500;"></span>
+                </span>
+                <span style="font-size:13px; color: var(--text-secondary); font-weight:600;">Offline-first ✅</span>
+            </div>
+            <div class="info-box" style="margin-bottom:0;">
+                <strong>Data Handling</strong>
+                This form does not send data anywhere by itself. Entries and photos stay on this device unless you download/share the report.
+                If this device is shared, clear saved data when you’re done.
+            </div>
+        </div>
+
+        <!-- Job Information -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('job-info')">
+                <div class="section-title">📋 Job Information</div>
+                <div class="section-status" id="status-job-info">Incomplete</div>
+            </div>
+            <div class="section-content active" id="content-job-info">
+                <div class="form-group">
+                    <label>Site Name *</label>
+                    <input type="text" id="site-name" placeholder="Enter site/project name">
+                </div>
+                <div class="form-group">
+                    <label>GPS Coordinates</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="gps-coords" placeholder="Will be captured automatically" readonly style="flex: 1;">
+                        <button class="photo-btn" onclick="captureGPS()" style="margin: 0;">📍 Get Location</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tribal Affiliation *</label>
+                    <select id="tribal-affiliation">
+                        <option value="">Select tribe</option>
+                        <option value="Yankton Sioux Tribe">Yankton Sioux Tribe</option>
+                        <option value="Turtle Mountain Band of Chippewa">Turtle Mountain Band of Chippewa</option>
+                        <option value="Spirit Lake Tribe">Spirit Lake Tribe</option>
+                        <option value="Rosebud Sioux Tribe">Rosebud Sioux Tribe</option>
+                        <option value="Oglala Sioux Tribe">Oglala Sioux Tribe</option>
+                        <option value="Northern Cheyenne Tribe">Northern Cheyenne Tribe</option>
+                        <option value="Northern Arapaho Tribe">Northern Arapaho Tribe</option>
+                        <option value="MHA Nation (Mandan, Hidatsa & Arikara)">MHA Nation (Mandan, Hidatsa & Arikara)</option>
+                        <option value="Menominee Indian Tribe of Wisconsin">Menominee Indian Tribe of Wisconsin</option>
+                        <option value="Sisseton Wahpeton Oyate (Lake Traverse)">Sisseton Wahpeton Oyate (Lake Traverse)</option>
+                        <option value="Flandreau Santee Sioux Tribe">Flandreau Santee Sioux Tribe</option>
+                        <option value="Chippewa Cree Tribe">Chippewa Cree Tribe</option>
+                        <option value="Blackfeet Nation">Blackfeet Nation</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Installation Address *</label>
+                    <input type="text" id="install-address" placeholder="Street address">
+                </div>
+                <div class="form-group">
+                    <label>City, State, ZIP</label>
+                    <input type="text" id="city-state-zip" placeholder="City, State, ZIP">
+                </div>
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="form-group">
+                    <label>Completion Date *</label>
+                    <input type="date" id="completion-date">
+                </div>
+                <div class="form-group">
+                    <label>Electrical Contractor's Name *</label>
+                    <input type="text" id="contractor-name" placeholder="Name of electrical contractor">
+                </div>
+                <div class="form-group">
+                    <label>Electrical Contractor's POC (Point of Contact)</label>
+                    <input type="text" id="contractor-poc" placeholder="Contact person name and phone">
+                </div>
+                <div class="form-group">
+                    <label>Installation Type *</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="radio" name="install-type" id="install-roof" value="roof">
+                            <label for="install-roof">Roof Mount</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" name="install-type" id="install-ground" value="ground">
+                            <label for="install-ground">Ground Mount</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Details -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('system-details')">
+                <div class="section-title">⚡ System Details</div>
+                <div class="section-status" id="status-system-details">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-system-details">
+                <div class="form-group">
+                    <label>System Size (kW DC) *</label>
+                    <input type="number" step="0.1" id="system-size" placeholder="e.g., 8.5">
+                </div>
+                <div class="form-group">
+                    <label>Number of Solar Panels *</label>
+                    <input type="number" id="num-panels" placeholder="Total panel count">
+                </div>
+                <div class="form-group">
+                    <label>Panel Make & Model *</label>
+                    <input type="text" id="panel-model" placeholder="e.g., LG 400W Neon2">
+                </div>
+                <div class="form-group">
+                    <label>Panel Wattage (each)</label>
+                    <input type="number" id="panel-wattage" placeholder="e.g., 400">
+                </div>
+                
+                <div class="form-group">
+                    <label>Number of Inverters *</label>
+                    <input type="number" id="num-inverters" placeholder="How many inverters?" onchange="generateInverterFields()" min="0">
+                    <small>Enter number to generate fields for each inverter</small>
+                </div>
+                
+                <div id="inverters-container"></div>
+                
+                <div class="form-group">
+                    <label>Racking System</label>
+                    <input type="text" id="racking-system" placeholder="e.g., IronRidge XR100">
+                </div>
+                
+                <div class="form-group">
+                    <label>Number of Battery Systems</label>
+                    <input type="number" id="num-batteries" placeholder="0 if no batteries" onchange="generateBatteryFields()" min="0">
+                    <small>Enter number to generate fields for each battery (0 if none)</small>
+                </div>
+                
+                <div id="batteries-container"></div>
+</div>
+        </div>
+
+        <!-- Visual Verification Checklist -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('verification')">
+                <div class="section-title">✓ Visual Verification Checklist</div>
+                <div class="section-status" id="status-verification">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-verification">
+                <div class="info-box">
+                    <strong>Post-Installation Visual Checks</strong>
+                    System is installed and running - verify all components are in place
+                </div>
+
+                <div class="form-group">
+                    <label>Installation Complete</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-panels-installed">
+                            <label for="check-panels-installed">All panels installed and secure</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-inverters-installed">
+                            <label for="check-inverters-installed">All inverter(s) installed and mounted</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-batteries-installed">
+                            <label for="check-batteries-installed">Battery system installed (if applicable)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-racking-secure">
+                            <label for="check-racking-secure">Racking system secure and properly attached</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-wiring-neat">
+                            <label for="check-wiring-neat">Wiring neat and professionally run</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-labels-present">
+                            <label for="check-labels-present">All required labels and placards present</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>System is Operational</strong>
+                    Verify system is powered on and producing
+                </div>
+
+                <div class="form-group">
+                    <label>System Status</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-system-on">
+                            <label for="check-system-on">System powered on and communicating</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-producing">
+                            <label for="check-producing">System producing power (if sunny)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="check-monitoring-active">
+                            <label for="check-monitoring-active">Monitoring system active and reporting</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notes on Installation Quality</label>
+                    <textarea id="installation-notes" placeholder="Any observations about installation quality, workmanship, etc..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Performance & Readings -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('performance')">
+                <div class="section-title">📊 System Performance & Readings</div>
+                <div class="section-status" id="status-performance">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-performance">
+                <div class="info-box">
+                    <strong>Capture Current Production Data</strong>
+                    Take photos and record readings from monitoring system/inverter displays
+                </div>
+
+                <div class="form-group">
+                    <label>Current Production (kW) *</label>
+                    <input type="number" step="0.01" id="current-production" placeholder="e.g., 7.25">
+                    <small>Current power output at time of closeout (from monitoring app or inverter display)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Production Screenshot/Photo *</label>
+                    <button class="photo-btn" onclick="capturePhoto('production-screen')">📷 Take Photo</button>
+                    <input type="file" id="production-screen-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'production-screen')">
+                    <div class="photo-gallery" id="production-screen-gallery"></div>
+                    <small>Screenshot of monitoring app or photo of inverter display showing production</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Energy Produced to Date (kWh)</label>
+                    <input type="number" step="0.1" id="total-energy" placeholder="Lifetime production if available">
+                </div>
+
+                <div class="form-group">
+                    <label>System Status from Monitoring</label>
+                    <select id="system-status-monitoring">
+                        <option value="">Select status</option>
+                        <option value="normal">Normal Operation</option>
+                        <option value="warning">Warning/Alert Present</option>
+                        <option value="error">Error Present</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Weather Conditions During Check</label>
+                    <select id="weather-conditions">
+                        <option value="">Select conditions</option>
+                        <option value="sunny">Sunny/Clear</option>
+                        <option value="partly-cloudy">Partly Cloudy</option>
+                        <option value="cloudy">Cloudy</option>
+                        <option value="overcast">Overcast</option>
+                        <option value="rainy">Rainy</option>
+                    </select>
+                    <small>Production will be lower on cloudy days - this is normal</small>
+                </div>
+
+                <div id="inverter-readings-container">
+                    <div class="info-box">
+                        <strong>Inverter Readings</strong>
+                        Record readings from each inverter display
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Battery State of Charge (if applicable)</label>
+                    <input type="number" id="battery-soc" placeholder="e.g., 85">
+                    <small>Battery percentage from monitoring app</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Performance Notes</label>
+                    <textarea id="performance-notes" placeholder="Any notes about system performance, alerts, or observations..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspections & Permits -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('inspections')">
+                <div class="section-title">🔍 Inspections & Permits</div>
+                <div class="section-status" id="status-inspections">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-inspections">
+                <div class="form-group">
+                    <label>Building Permit Number</label>
+                    <input type="text" id="building-permit" placeholder="Enter permit number">
+                </div>
+                <div class="form-group">
+                    <label>Electrical Permit Number</label>
+                    <input type="text" id="electrical-permit" placeholder="Enter permit number">
+                </div>
+                <div class="form-group">
+                    <label>Structural/Engineering Stamp Required?</label>
+                    <select id="structural-required">
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Structural Inspection Status</label>
+                    <select id="structural-status">
+                        <option value="">Select status</option>
+                        <option value="passed">Passed</option>
+                        <option value="pending">Pending</option>
+                        <option value="na">Not Required</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Electrical Inspection Status *</label>
+                    <select id="electrical-inspection">
+                        <option value="">Select status</option>
+                        <option value="passed">Passed</option>
+                        <option value="pending">Pending</option>
+                        <option value="corrections-needed">Corrections Needed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Electrical Inspection Date</label>
+                    <input type="date" id="inspection-date">
+                </div>
+                <div class="form-group">
+                    <label>Inspector Name</label>
+                    <input type="text" id="inspector-name" placeholder="Name of inspector">
+                </div>
+                <div class="form-group">
+                    <label>Inspection Notes/Corrections</label>
+                    <textarea id="inspection-notes" placeholder="Any corrections required or inspector notes..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Final Inspection Photos</label>
+                    <button class="photo-btn" onclick="capturePhoto('inspection')">📷 Take Photo</button>
+                    <input type="file" id="inspection-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inspection')">
+                    <div class="photo-gallery" id="inspection-gallery"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Photos -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('photos')">
+                <div class="section-title">📸 Documentation Photos</div>
+                <div class="section-status" id="status-photos">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-photos">
+                <div class="info-box">
+                    <strong>Required Photos</strong>
+                    Document the completed installation from all angles
+                </div>
+
+                <div class="form-group">
+                    <label>Array Overview (wide shot of all panels) *</label>
+                    <button class="photo-btn" onclick="capturePhoto('array-overview')">📷 Take Photo</button>
+                    <input type="file" id="array-overview-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'array-overview')">
+                    <div class="photo-gallery" id="array-overview-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Array Close-Up *</label>
+                    <button class="photo-btn" onclick="capturePhoto('array-closeup')">📷 Take Photo</button>
+                    <input type="file" id="array-closeup-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'array-closeup')">
+                    <div class="photo-gallery" id="array-closeup-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Inverter Installation *</label>
+                    <button class="photo-btn" onclick="capturePhoto('inverter')">📷 Take Photo</button>
+                    <input type="file" id="inverter-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inverter')">
+                    <div class="photo-gallery" id="inverter-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Main Panel/Breaker *</label>
+                    <button class="photo-btn" onclick="capturePhoto('main-panel')">📷 Take Photo</button>
+                    <input type="file" id="main-panel-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'main-panel')">
+                    <div class="photo-gallery" id="main-panel-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>AC Disconnect</label>
+                    <button class="photo-btn" onclick="capturePhoto('disconnect')">📷 Take Photo</button>
+                    <input type="file" id="disconnect-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'disconnect')">
+                    <div class="photo-gallery" id="disconnect-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Labels & Placards *</label>
+                    <button class="photo-btn" onclick="capturePhoto('labels')">📷 Take Photo</button>
+                    <input type="file" id="labels-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'labels')">
+                    <div class="photo-gallery" id="labels-gallery"></div>
+                    <small>Photo of all required warning labels and placards</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Roof Flashing/Penetrations</label>
+                    <button class="photo-btn" onclick="capturePhoto('flashing')">📷 Take Photo</button>
+                    <input type="file" id="flashing-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'flashing')">
+                    <div class="photo-gallery" id="flashing-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Battery System (if applicable)</label>
+                    <button class="photo-btn" onclick="capturePhoto('battery')">📷 Take Photo</button>
+                    <input type="file" id="battery-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'battery')">
+                    <div class="photo-gallery" id="battery-gallery"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Monitoring Display</label>
+                    <button class="photo-btn" onclick="capturePhoto('monitoring')">📷 Take Photo</button>
+                    <input type="file" id="monitoring-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'monitoring')">
+                    <div class="photo-gallery" id="monitoring-gallery"></div>
+                    <small>Screenshot or photo of monitoring system showing production</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Photos</label>
+                    <button class="photo-btn" onclick="capturePhoto('additional')">📷 Take Photo</button>
+                    <input type="file" id="additional-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'additional')">
+                    <div class="photo-gallery" id="additional-gallery"></div>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- Monitoring & Communications -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('monitoring')">
+                <div class="section-title">📡 Monitoring & Communications</div>
+                <div class="section-status" id="status-monitoring">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-monitoring">
+                <div class="info-box">
+                    <strong>Monitoring Verification</strong>
+                    Confirm the monitoring platform is installed, communicating, and accessible before handoff
+                </div>
+
+                <div class="form-group">
+                    <label>Monitoring Platform</label>
+                    <input type="text" id="monitoring-platform" placeholder="e.g., Enphase Enlighten, SolarEdge, Tesla">
+                    <small>Primary monitoring system used for this installation</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Monitoring Setup & Connectivity</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monitoring-installed">
+                            <label for="monitoring-installed">Monitoring hardware installed and configured</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monitoring-communicating">
+                            <label for="monitoring-communicating">System is communicating properly</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monitoring-production-visible">
+                            <label for="monitoring-production-visible">Production data visible in monitoring portal</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monitoring-login-verified">
+                            <label for="monitoring-login-verified">Login credentials verified</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="monitoring-app-working">
+                            <label for="monitoring-app-working">Mobile app installed and functioning</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Monitoring Status</label>
+                    <select id="monitoring-status">
+                        <option value="">Select status</option>
+                        <option value="normal">Normal Operation</option>
+                        <option value="warning">Warning/Alert Present</option>
+                        <option value="error">Error Present</option>
+                    </select>
+                    <small>Select the current status shown in the monitoring system</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Monitoring Notes / Error Messages</label>
+                    <textarea id="monitoring-notes" placeholder="Record any alerts, error codes, delays, or follow-up items..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Handoff -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('customer-handoff')">
+                <div class="section-title">🤝 Customer Handoff</div>
+                <div class="section-status" id="status-customer-handoff">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-customer-handoff">
+                <div class="info-box">
+                    <strong>Customer Training & Documentation</strong>
+                    Ensure customer understands system operation
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Training Completed</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="training-system-operation">
+                            <label for="training-system-operation">System operation explained</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="training-monitoring">
+                            <label for="training-monitoring">Monitoring app/portal demonstrated</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="training-shutoff">
+                            <label for="training-shutoff">Shutdown procedures explained</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="training-maintenance">
+                            <label for="training-maintenance">Maintenance requirements explained</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="training-warranty">
+                            <label for="training-warranty">Warranty information provided</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Documents Provided to Customer</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doc-manual">
+                            <label for="doc-manual">System manuals (panels, inverter, battery)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doc-warranty">
+                            <label for="doc-warranty">Warranty documentation</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doc-permits">
+                            <label for="doc-permits">Copy of permits and inspections</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doc-asbuilt">
+                            <label for="doc-asbuilt">As-built drawings (if applicable)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doc-monitoring">
+                            <label for="doc-monitoring">Monitoring system login info</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="doc-contact">
+                            <label for="doc-contact">Indigenized Energy contact information</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Monitoring System Login</label>
+                    <input type="text" id="monitoring-login" placeholder="Username/email for monitoring access">
+                </div>
+
+                <div class="form-group">
+                    <label>System Producing at Handoff?</label>
+                    <select id="system-producing">
+                        <option value="">Select</option>
+                        <option value="yes">Yes - System Live</option>
+                        <option value="pto-pending">No - Awaiting PTO</option>
+                        <option value="inspection-pending">No - Awaiting Inspection</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Satisfaction</label>
+                    <select id="customer-satisfaction">
+                        <option value="">Select</option>
+                        <option value="very-satisfied">Very Satisfied</option>
+                        <option value="satisfied">Satisfied</option>
+                        <option value="neutral">Neutral</option>
+                        <option value="concerns">Had Concerns</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Feedback/Comments</label>
+                    <textarea id="customer-feedback" placeholder="Any feedback from customer about the installation..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Signature *</label>
+                    <input type="text" id="customer-signature" placeholder="Customer name (digital signature)">
+                    <small>Customer acknowledges system handoff and training completion</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer Signature Date</label>
+                    <input type="date" id="signature-date">
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues & Notes -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('issues')">
+                <div class="section-title">⚠️ Issues & Notes</div>
+                <div class="section-status" id="status-issues">Optional</div>
+            </div>
+            <div class="section-content" id="content-issues">
+                <div class="form-group">
+                    <label>Were there any installation issues?</label>
+                    <select id="had-issues">
+                        <option value="no">No Issues</option>
+                        <option value="yes">Yes - Issues Encountered</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Issues Encountered</label>
+                    <textarea id="issues-description" placeholder="Describe any issues that occurred during installation..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>How Were Issues Resolved?</label>
+                    <textarea id="issues-resolution" placeholder="Describe how issues were resolved..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Change Orders</label>
+                    <textarea id="change-orders" placeholder="Any change orders or scope changes from original plan..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Materials Used vs. Planned</label>
+                    <textarea id="materials-variance" placeholder="Any differences from planned materials or quantities..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Follow-Up Required?</label>
+                    <select id="followup-required">
+                        <option value="no">No Follow-Up Needed</option>
+                        <option value="yes">Yes - Follow-Up Required</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Follow-Up Details</label>
+                    <textarea id="followup-details" placeholder="What follow-up is needed and when..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Internal Notes</label>
+                    <textarea id="internal-notes" placeholder="Any internal notes for office/management..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Sign-Off -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('signoff')">
+                <div class="section-title">✍️ Final Sign-Off</div>
+                <div class="section-status" id="status-signoff">Incomplete</div>
+            </div>
+            <div class="section-content" id="content-signoff">
+                <div class="info-box">
+                    <strong>Installation Complete</strong>
+                    Lead installer certification that job is complete per specifications
+                </div>
+
+                <div class="form-group">
+                    <label>I certify that:</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cert-complete">
+                            <label for="cert-complete">Installation is complete per plans and specifications</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cert-code">
+                            <label for="cert-code">All work meets National Electrical Code requirements</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cert-manufacturer">
+                            <label for="cert-manufacturer">Installation per manufacturer specifications</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cert-tested">
+                            <label for="cert-tested">System has been tested and is operational</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cert-clean">
+                            <label for="cert-clean">Site has been cleaned and customer property respected</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Lead Installer Signature *</label>
+                    <input type="text" id="installer-signature" placeholder="Your name (digital signature)">
+                </div>
+
+                <div class="form-group">
+                    <label>Sign-Off Date *</label>
+                    <input type="date" id="signoff-date">
+                </div>
+
+                <div class="form-group">
+                    <label>Total Labor Hours</label>
+                    <input type="number" step="0.5" id="labor-hours" placeholder="Total crew hours on job">
+                </div>
+
+                <div class="form-group">
+                    <label>Final Comments</label>
+                    <textarea id="final-comments" placeholder="Any final comments or notes about this installation..."></textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Upload Prep -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('upload-prep')">
+                <div class="section-title">☁️ Upload Prep</div>
+                <div class="section-status" id="status-upload-prep">Optional</div>
+            </div>
+            <div class="section-content" id="content-upload-prep">
+                <div class="info-box">
+                    <strong>Ready for Upload</strong>
+                    Use this when the closeout is complete and you’re ready to send/store it in your official system.
+                </div>
+
+                <div class="form-group">
+                    <label>Mark as Ready for Upload</label>
+                    <div class="checkbox-group" style="display: block;">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ready-for-upload">
+                            <label for="ready-for-upload">Closeout packet is complete and ready to upload</label>
+                        </div>
+                    </div>
+                    <small id="ready-timestamp" style="color: var(--text-secondary);"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Notes</label>
+                    <textarea id="upload-notes" placeholder="Anything the office should know (PTO pending, monitoring delays, follow-up needed, etc.)..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="export-container">
+            <div style="margin-bottom:18px; display:flex; justify-content:center;">
+                <div class="checkbox-item" style="max-width:520px; width:100%; background:#FAFAFA;">
+                    <input type="checkbox" id="clear-after-export" checked>
+                    <label for="clear-after-export" style="margin:0;">Clear saved progress on this device after exporting</label>
+                </div>
+            </div>
+<button class="btn-export" onclick="generateReport()">📄 Generate Report</button>
+            <button class="btn-export" onclick="saveProgress()">💾 Save Progress</button>
+            <button class="btn-export btn-clear" onclick="clearForm()">🗑️ Clear Form</button>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('completion-date').value = today;
+            document.getElementById('signature-date').value = today;
+            document.getElementById('signoff-date').value = today;
+
+            // Initialize connectivity banner
+            updateConnectivityStatus();
+
+            // Ready-for-upload timestamp
+            const readyBox = document.getElementById('ready-for-upload');
+            const readyTs = document.getElementById('ready-timestamp');
+            if (readyBox && readyTs) {
+                const savedReady = localStorage.getItem('jcoReadyTimestamp');
+                if (savedReady) {
+                    readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
+                }
+                readyBox.addEventListener('change', () => {
+                    if (readyBox.checked) {
+                        const ts = new Date().toISOString();
+                        localStorage.setItem('jcoReadyTimestamp', ts);
+                        readyTs.textContent = 'Marked ready on: ' + new Date(ts).toLocaleString();
+                    } else {
+                        localStorage.removeItem('jcoReadyTimestamp');
+                        readyTs.textContent = '';
+                    }
+                });
+            }
+
+        });
+
+        
+        // Connectivity / Offline-first status
+        function updateConnectivityStatus() {
+            const statusEl = document.getElementById('connectivity-status');
+            const noteEl = document.getElementById('connectivity-note');
+            if (!statusEl || !noteEl) return;
+
+            const online = navigator.onLine;
+            statusEl.textContent = online ? 'Online' : 'Offline';
+            statusEl.className = online ? 'status-good' : 'status-warning';
+            noteEl.textContent = online
+                ? 'You can still work offline. Downloads work either way.'
+                : 'You are offline. Data will stay on-device until you export/share.';
+        }
+
+        window.addEventListener('online', updateConnectivityStatus);
+        window.addEventListener('offline', updateConnectivityStatus);
+
+
+        // Photo storage
+        const photos = {
+            'inspection': [],
+            'production-screen': [],
+            'array-overview': [],
+            'array-closeup': [],
+            'inverter': [],
+            'main-panel': [],
+            'disconnect': [],
+            'labels': [],
+            'flashing': [],
+            'battery': [],
+            'monitoring': [],
+            'additional': []
+        };
+
+        // GPS Capture
+        function captureGPS() {
+            if (!navigator.geolocation) {
+                alert('GPS not supported by your browser');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lon = position.coords.longitude.toFixed(6);
+                    document.getElementById('gps-coords').value = `${lat}, ${lon}`;
+                },
+                function(error) {
+                    alert('Unable to get location: ' + error.message);
+                }
+            );
+        }
+
+        // Generate Inverter Fields
+        function generateInverterFields() {
+            const num = parseInt(document.getElementById('num-inverters').value) || 0;
+            const container = document.getElementById('inverters-container');
+            container.innerHTML = '';
+
+            if (num === 0) return;
+            if (num < 0) {
+                document.getElementById('num-inverters').value = 0;
+                return;
+            }
+
+            for (let i = 1; i <= num; i++) {
+                const inverterDiv = document.createElement('div');
+                inverterDiv.style.cssText = 'background: #FFF8E1; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #DEB887;';
+                inverterDiv.innerHTML = `
+                    <h4 style="color: #8B4513; margin-bottom: 15px;">Inverter ${i}</h4>
+                    
+                    <div class="form-group">
+                        <label>Make & Model *</label>
+                        <input type="text" id="inverter-${i}-model" placeholder="e.g., Enphase IQ8+" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Serial Number</label>
+                        <input type="text" id="inverter-${i}-serial" placeholder="Serial number" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Serial Number Photo</label>
+                        <button class="photo-btn" onclick="capturePhoto('inverter-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
+                        <input type="file" id="inverter-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inverter-${i}-serial')">
+                        <div class="photo-gallery" id="inverter-${i}-serial-gallery"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="inverter-${i}-type" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                            <option value="">Select type</option>
+                            <option value="microinverter">Microinverter</option>
+                            <option value="string">String Inverter</option>
+                            <option value="hybrid">Hybrid Inverter</option>
+                            <option value="optimizer">Power Optimizer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Current Output (W)</label>
+                        <input type="number" id="inverter-${i}-output" placeholder="Current power output" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                        <small style="color: #666;">Reading from inverter display at time of closeout</small>
+                    </div>
+                `;
+                container.appendChild(inverterDiv);
+                
+                // Initialize photo storage for this inverter
+                if (!photos[`inverter-${i}-serial`]) {
+                    photos[`inverter-${i}-serial`] = [];
+                }
+            }
+            updateProgress();
+        }
+
+        // Generate Battery Fields
+        function generateBatteryFields() {
+            const num = parseInt(document.getElementById('num-batteries').value) || 0;
+            const container = document.getElementById('batteries-container');
+            container.innerHTML = '';
+
+            if (num === 0) return;
+            if (num < 0) {
+                document.getElementById('num-batteries').value = 0;
+                return;
+            }
+
+            for (let i = 1; i <= num; i++) {
+                const batteryDiv = document.createElement('div');
+                batteryDiv.style.cssText = 'background: #F0FFF0; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #90EE90;';
+                batteryDiv.innerHTML = `
+                    <h4 style="color: #2E7D32; margin-bottom: 15px;">Battery ${i}</h4>
+                    
+                    <div class="form-group">
+                        <label>Make & Model *</label>
+                        <input type="text" id="battery-${i}-model" placeholder="e.g., Tesla Powerwall 2" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Capacity (kWh)</label>
+                        <input type="number" step="0.1" id="battery-${i}-capacity" placeholder="e.g., 13.5" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Serial Number</label>
+                        <input type="text" id="battery-${i}-serial" placeholder="Serial number" style="width: 100%; padding: 14px 16px; border: 2px solid #E0E0E0; border-radius: 12px; font-size: 15px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Serial Number Photo</label>
+                        <button class="photo-btn" onclick="capturePhoto('battery-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
+                        <input type="file" id="battery-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'battery-${i}-serial')">
+                        <div class="photo-gallery" id="battery-${i}-serial-gallery"></div>
+                    </div>
+                `;
+                container.appendChild(batteryDiv);
+                
+                // Initialize photo storage for this battery
+                if (!photos[`battery-${i}-serial`]) {
+                    photos[`battery-${i}-serial`] = [];
+                }
+            }
+            updateProgress();
+        }
+
+        // Toggle section
+        function toggleSection(sectionId) {
+            const content = document.getElementById('content-' + sectionId);
+            content.classList.toggle('active');
+        }
+
+        // Capture photo
+        function capturePhoto(type) {
+            document.getElementById(type + '-input').click();
+        }
+
+        // Handle photo upload
+        function handlePhotoUpload(event, type) {
+            const files = event.target.files;
+            if (files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photos[type].push({
+                        data: e.target.result,
+                        name: file.name
+                    });
+                    displayPhotos(type);
+                    updateProgress();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = '';
+        }
+
+        // Display photos
+        function displayPhotos(type) {
+            const gallery = document.getElementById(type + '-gallery');
+            if (!gallery) return;
+
+            gallery.innerHTML = '';
+            photos[type].forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `
+                    <img src="${photo.data}" alt="Photo ${index + 1}">
+                    <button class="photo-delete" onclick="deletePhoto('${type}', ${index})">×</button>
+                `;
+                gallery.appendChild(item);
+            });
+        }
+
+        // Delete photo
+        function deletePhoto(type, index) {
+            photos[type].splice(index, 1);
+            displayPhotos(type);
+            updateProgress();
+        }
+
+        // Update progress
+        function updateProgress() {
+            let completed = 0;
+            let total = 9; // Number of main sections // Number of main sections
+
+            // Check job info
+            if (document.getElementById('site-name').value &&
+                document.getElementById('tribal-affiliation').value &&
+                document.getElementById('install-address').value &&
+                document.getElementById('start-date').value &&
+                document.getElementById('completion-date').value &&
+                document.getElementById('contractor-name').value) {
+                completed++;
+                document.getElementById('status-job-info').textContent = 'Complete';
+                document.getElementById('status-job-info').classList.add('complete');
+            } else {
+                document.getElementById('status-job-info').textContent = 'Incomplete';
+                document.getElementById('status-job-info').classList.remove('complete');
+            }
+
+            // Check system details
+            if (document.getElementById('system-size').value &&
+                document.getElementById('num-panels').value &&
+                document.getElementById('panel-model').value &&
+                document.getElementById('num-inverters').value) {
+                completed++;
+                document.getElementById('status-system-details').textContent = 'Complete';
+                document.getElementById('status-system-details').classList.add('complete');
+            } else {
+                document.getElementById('status-system-details').textContent = 'Incomplete';
+                document.getElementById('status-system-details').classList.remove('complete');
+            }
+
+            // Check verification checklist
+            const checkboxes = document.querySelectorAll('#content-verification input[type="checkbox"]');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            if (checkedCount >= 5) {
+                completed++;
+                document.getElementById('status-verification').textContent = 'Complete';
+                document.getElementById('status-verification').classList.add('complete');
+            } else {
+                document.getElementById('status-verification').textContent = 'Incomplete';
+                document.getElementById('status-verification').classList.remove('complete');
+            }
+
+            // Check performance/readings
+            if (document.getElementById('current-production').value &&
+                photos['production-screen'].length > 0) {
+                completed++;
+                document.getElementById('status-performance').textContent = 'Complete';
+                document.getElementById('status-performance').classList.add('complete');
+            } else {
+                document.getElementById('status-performance').textContent = 'Incomplete';
+                document.getElementById('status-performance').classList.remove('complete');
+            }
+
+            // Check inspections
+            if (document.getElementById('electrical-inspection').value) {
+                completed++;
+                document.getElementById('status-inspections').textContent = 'Complete';
+                document.getElementById('status-inspections').classList.add('complete');
+            } else {
+                document.getElementById('status-inspections').textContent = 'Incomplete';
+                document.getElementById('status-inspections').classList.remove('complete');
+            }
+
+            // Check photos (require key photos)
+            if (photos['array-overview'].length > 0 &&
+                photos['array-closeup'].length > 0 &&
+                photos['inverter'].length > 0 &&
+                photos['main-panel'].length > 0 &&
+                photos['labels'].length > 0) {
+                completed++;
+                document.getElementById('status-photos').textContent = 'Complete';
+                document.getElementById('status-photos').classList.add('complete');
+            } else {
+                document.getElementById('status-photos').textContent = 'Incomplete';
+                document.getElementById('status-photos').classList.remove('complete');
+            }
+
+            
+            // Check monitoring
+            const monitoringChecks = document.querySelectorAll('#content-monitoring input[type="checkbox"]:checked').length;
+            if (document.getElementById('monitoring-platform').value &&
+                document.getElementById('monitoring-status').value &&
+                monitoringChecks >= 3) {
+                completed++;
+                document.getElementById('status-monitoring').textContent = 'Complete';
+                document.getElementById('status-monitoring').classList.add('complete');
+            } else {
+                document.getElementById('status-monitoring').textContent = 'Incomplete';
+                document.getElementById('status-monitoring').classList.remove('complete');
+            }
+
+            // Check customer handoff
+            const trainingChecks = document.querySelectorAll('#content-customer-handoff input[type="checkbox"]:checked').length;
+            if (trainingChecks >= 5 && 
+                document.getElementById('customer-signature').value &&
+                document.getElementById('system-producing').value) {
+                completed++;
+                document.getElementById('status-customer-handoff').textContent = 'Complete';
+                document.getElementById('status-customer-handoff').classList.add('complete');
+            } else {
+                document.getElementById('status-customer-handoff').textContent = 'Incomplete';
+                document.getElementById('status-customer-handoff').classList.remove('complete');
+            }
+
+            // Check sign-off
+            const certChecks = document.querySelectorAll('#content-signoff input[type="checkbox"]:checked').length;
+            if (certChecks >= 5 &&
+                document.getElementById('installer-signature').value &&
+                document.getElementById('signoff-date').value) {
+                completed++;
+                document.getElementById('status-signoff').textContent = 'Complete';
+                document.getElementById('status-signoff').classList.add('complete');
+            } else {
+                document.getElementById('status-signoff').textContent = 'Incomplete';
+                document.getElementById('status-signoff').classList.remove('complete');
+            }
+
+            
+            // Progress bar tracks completion of REQUIRED (*) items only
+            const required = [];
+
+            const hasValue = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return false;
+                // For number/date/text/select: treat "0" as valid if present
+                return (el.value !== null && el.value !== undefined && String(el.value).trim() !== '');
+            };
+
+            // Required fields (marked with * in the form)
+            required.push(hasValue('site-name'));
+            required.push(hasValue('tribal-affiliation'));
+            required.push(hasValue('install-address'));
+            required.push(hasValue('start-date'));
+            required.push(hasValue('completion-date'));
+            required.push(hasValue('contractor-name'));
+
+            required.push(hasValue('system-size'));
+            required.push(hasValue('num-panels'));
+            required.push(hasValue('panel-model'));
+            required.push(hasValue('num-inverters'));
+
+            // If inverters are generated, each inverter model is required (*)
+            const invCount = parseInt(document.getElementById('num-inverters').value) || 0;
+            if (invCount > 0) {
+                for (let i = 1; i <= invCount; i++) {
+                    required.push(hasValue(`inverter-${i}-model`));
+                }
+            }
+
+            required.push(hasValue('current-production'));
+            required.push(photos['production-screen'].length > 0);
+
+            required.push(hasValue('electrical-inspection'));
+
+            // Required photos
+            required.push(photos['array-overview'].length > 0);
+            required.push(photos['array-closeup'].length > 0);
+            required.push(photos['inverter'].length > 0);
+            required.push(photos['main-panel'].length > 0);
+            required.push(photos['labels'].length > 0);
+
+            required.push(hasValue('customer-signature'));
+            required.push(hasValue('system-producing'));
+
+            required.push(hasValue('installer-signature'));
+            required.push(hasValue('signoff-date'));
+
+            const requiredDone = required.filter(Boolean).length;
+            const requiredTotal = required.length;
+            const percent = requiredTotal ? Math.round((requiredDone / requiredTotal) * 100) : 0;
+
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            progressFill.style.width = percent + '%';
+            progressText.textContent = percent + '%';
+}
+
+        // Add event listeners to all inputs
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('change', updateProgress);
+            element.addEventListener('input', updateProgress);
+        });
+
+        // Generate report
+        
+        // Generate report
+        function generateReport() {
+            const getVal = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return '';
+                if (el.type === 'checkbox') return !!el.checked;
+                return el.value || '';
+            };
+
+            // Build inverter details dynamically (if any)
+            const numInv = parseInt(getVal('num-inverters')) || 0;
+            const inverters = [];
+            for (let i = 1; i <= numInv; i++) {
+                inverters.push({
+                    index: i,
+                    makeModel: getVal(`inverter-${i}-model`),
+                    serial: getVal(`inverter-${i}-serial`),
+                    type: getVal(`inverter-${i}-type`),
+                    currentOutputW: getVal(`inverter-${i}-output`),
+                    serialPhotos: photos[`inverter-${i}-serial`] || []
+                });
+            }
+
+            // Build battery details dynamically (if any)
+            const numBat = parseInt(getVal('num-batteries')) || 0;
+            const batteries = [];
+            for (let i = 1; i <= numBat; i++) {
+                batteries.push({
+                    index: i,
+                    makeModel: getVal(`battery-${i}-model`),
+                    capacityKWh: getVal(`battery-${i}-capacity`),
+                    serial: getVal(`battery-${i}-serial`),
+                    serialPhotos: photos[`battery-${i}-serial`] || []
+                });
+            }
+
+            const data = {
+                meta: {
+                    exportedAt: new Date().toISOString(),
+                    exportedFrom: window.location.href || '',
+                    onlineAtExport: navigator.onLine
+                },
+                jobInfo: {
+                    siteName: getVal('site-name'),
+                    gpsCoordinates: getVal('gps-coords'),
+                    tribalAffiliation: getVal('tribal-affiliation'),
+                    installationAddress: getVal('install-address'),
+                    cityStateZip: getVal('city-state-zip'),
+                    startDate: getVal('start-date'),
+                    completionDate: getVal('completion-date'),
+                    contractorName: getVal('contractor-name'),
+                    contractorPOC: getVal('contractor-poc'),
+                    installationType: (document.querySelector('input[name="install-type"]:checked') || {}).value || ''
+                },
+                systemDetails: {
+                    systemSizeKWdc: getVal('system-size'),
+                    numberOfPanels: getVal('num-panels'),
+                    panelMakeModel: getVal('panel-model'),
+                    panelWattageEach: getVal('panel-wattage'),
+                    numberOfInverters: getVal('num-inverters'),
+                    inverters: inverters,
+                    rackingSystem: getVal('racking-system'),
+                    numberOfBatteries: getVal('num-batteries'),
+                    batteries: batteries
+                },
+                monitoring: {
+                    platform: getVal('monitoring-platform'),
+                    setup: {
+                        installedConfigured: getVal('monitoring-installed'),
+                        communicating: getVal('monitoring-communicating'),
+                        productionVisible: getVal('monitoring-production-visible'),
+                        credentialsVerified: getVal('monitoring-login-verified'),
+                        mobileAppWorking: getVal('monitoring-app-working')
+                    },
+                    status: getVal('monitoring-status'),
+                    notes: getVal('monitoring-notes'),
+                    readyForUpload: getVal('ready-for-upload'),
+                    readyTimestamp: localStorage.getItem('jcoReadyTimestamp') || '',
+                    uploadNotes: getVal('upload-notes')
+                },
+                verificationChecklist: {
+                    panelsInstalled: getVal('check-panels-installed'),
+                    invertersInstalled: getVal('check-inverters-installed'),
+                    batteriesInstalled: getVal('check-batteries-installed'),
+                    rackingSecure: getVal('check-racking-secure'),
+                    wiringNeat: getVal('check-wiring-neat'),
+                    labelsPresent: getVal('check-labels-present'),
+                    systemOn: getVal('check-system-on'),
+                    producing: getVal('check-producing'),
+                    monitoringActive: getVal('check-monitoring-active'),
+                    notes: getVal('installation-notes')
+                },
+                performance: {
+                    currentProductionKW: getVal('current-production'),
+                    totalEnergyKWh: getVal('total-energy'),
+                    systemStatusFromMonitoring: getVal('system-status-monitoring'),
+                    weatherConditions: getVal('weather-conditions'),
+                    batterySOC: getVal('battery-soc'),
+                    notes: getVal('performance-notes')
+                },
+                inspections: {
+                    buildingPermitNumber: getVal('building-permit'),
+                    electricalPermitNumber: getVal('electrical-permit'),
+                    structuralStampRequired: getVal('structural-required'),
+                    structuralInspectionStatus: getVal('structural-status'),
+                    electricalInspectionStatus: getVal('electrical-inspection'),
+                    electricalInspectionDate: getVal('inspection-date'),
+                    inspectorName: getVal('inspector-name'),
+                    notesCorrections: getVal('inspection-notes')
+                },
+                customerHandoff: {
+                    training: {
+                        systemOperationExplained: getVal('training-system-operation'),
+                        monitoringDemonstrated: getVal('training-monitoring'),
+                        shutdownExplained: getVal('training-shutoff'),
+                        maintenanceExplained: getVal('training-maintenance'),
+                        warrantyProvided: getVal('training-warranty')
+                    },
+                    documents: {
+                        manuals: getVal('doc-manual'),
+                        warranty: getVal('doc-warranty'),
+                        permitsInspections: getVal('doc-permits'),
+                        asBuilt: getVal('doc-asbuilt'),
+                        monitoringLoginInfo: getVal('doc-monitoring'),
+                        ieContact: getVal('doc-contact')
+                    },
+                    monitoringLogin: getVal('monitoring-login'),
+                    systemProducingAtHandoff: getVal('system-producing'),
+                    customerSatisfaction: getVal('customer-satisfaction'),
+                    customerFeedback: getVal('customer-feedback'),
+                    customerSignature: getVal('customer-signature'),
+                    customerSignatureDate: getVal('signature-date')
+                },
+                issuesNotes: {
+                    hadIssues: getVal('had-issues'),
+                    issuesDescription: getVal('issues-description'),
+                    issuesResolution: getVal('issues-resolution'),
+                    changeOrders: getVal('change-orders'),
+                    materialsVariance: getVal('materials-variance'),
+                    followupRequired: getVal('followup-required'),
+                    followupDetails: getVal('followup-details'),
+                    internalNotes: getVal('internal-notes')
+                },
+                signoff: {
+                    certComplete: getVal('cert-complete'),
+                    certCode: getVal('cert-code'),
+                    certManufacturer: getVal('cert-manufacturer'),
+                    certTested: getVal('cert-tested'),
+                    certClean: getVal('cert-clean'),
+                    leadInstallerSignature: getVal('installer-signature'),
+                    signoffDate: getVal('signoff-date'),
+                    totalLaborHours: getVal('labor-hours'),
+                    finalComments: getVal('final-comments')
+                },
+                photos: photos
+            };
+
+            const safeName = (getVal('site-name') || 'site').toString().trim().replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g,'');
+            const safeDate = (getVal('completion-date') || '').toString().trim() || new Date().toISOString().slice(0,10);
+            const fileName = `JCO_${safeName}_${safeDate}.json`;
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.click();
+
+            // Optional auto-clear after export
+            const clearAfter = document.getElementById('clear-after-export');
+            if (clearAfter && clearAfter.checked) {
+                localStorage.removeItem('jcoProgress');
+                localStorage.removeItem('jcoReadyTimestamp');
+                // Clear form UI too
+                try { clearForm(); } catch(e) { /* ignore */ }
+            }
+
+            alert('Job Close Out report generated! File downloaded.');
+        }
+
+
+        // Save progress
+        function saveProgress() {
+            const data = {
+                // Save all form data
+                timestamp: new Date().toISOString()
+            };
+
+            // Get all input values
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                if (element.type === 'checkbox') {
+                    data[element.id] = element.checked;
+                } else if (element.type !== 'file') {
+                    data[element.id] = element.value;
+                }
+            });
+
+            data.photos = photos;
+
+            localStorage.setItem('jcoProgress', JSON.stringify(data));
+            alert('Progress saved! You can close and return later.');
+        }
+
+        // Clear form
+        function clearForm() {
+            if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                return;
+            }
+
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                if (element.type === 'checkbox') {
+                    element.checked = false;
+                } else if (element.type !== 'file') {
+                    element.value = '';
+                }
+            });
+
+            // Clear photos
+            for (let type in photos) {
+                photos[type] = [];
+                displayPhotos(type);
+            }
+
+            localStorage.removeItem('jcoProgress');
+            updateProgress();
+            alert('Form cleared!');
+        }
+
+        // Load progress on page load
+        window.addEventListener('load', function() {
+            updateConnectivityStatus();
+            const saved = localStorage.getItem('jcoProgress');
+            if (saved && confirm('Found saved progress. Would you like to restore it?')) {
+                const data = JSON.parse(saved);
+
+                // Restore all inputs
+                for (let key in data) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = data[key];
+                        } else if (element.type !== 'file') {
+                            element.value = data[key];
+                        }
+                    }
+                }
+
+                // Restore photos
+                if (data.photos) {
+                    for (let type in data.photos) {
+                        photos[type] = data.photos[type];
+                        displayPhotos(type);
+                    }
+                }
+
+                updateProgress();
+            }
+        });
+
+        // Initial progress update
+        updateProgress();
+    </script>
+</body>
+</html>
