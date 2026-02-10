@@ -1634,59 +1634,56 @@
   }
 
   // Save progress
-  function saveProgress() {
-    const data = { timestamp: new Date().toISOString() };
+function saveProgress() {
+  const data = { timestamp: new Date().toISOString() };
 
-    document.querySelectorAll('input, select, textarea').forEach(element => {
-      if (!element.id) return;
-      if (element.type === 'checkbox') data[element.id] = element.checked;
-      else if (element.type !== 'file') data[element.id] = element.value;
-    });
+  document.querySelectorAll('input, select, textarea').forEach(element => {
+    if (!element.id) return;
+    if (element.type === 'checkbox') data[element.id] = element.checked;
+    else if (element.type !== 'file') data[element.id] = element.value;
+  });
 
-    data.photos = photos;
+  data.photos = photos;
+
+  try {
     localStorage.setItem('jcoProgress', JSON.stringify(data));
     alert('Progress saved! You can close and return later.');
+  } catch (e) {
+    alert('Save failed (likely too many photos). Please export the report instead.');
+  }
+} // ✅ IMPORTANT: closes saveProgress()
+
+// Clear form
+function clearForm(silent = false) {
+  if (!silent && !confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
+
+  document.querySelectorAll('input, select, textarea').forEach(element => {
+    if (element.type === 'checkbox') element.checked = false;
+    else if (element.type !== 'file') element.value = '';
+
+    // clear touched flags too
+    if (element.id) element.dataset.touched = '0';
+  });
+
+  for (let type in photos) {
+    photos[type] = [];
+    displayPhotos(type);
   }
 
-  // Clear form
-  function clearForm(silent = false) {
-    if (!silent && !confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
+  localStorage.removeItem('jcoProgress');
+  localStorage.removeItem('jcoReadyTimestamp');
 
-    document.querySelectorAll('input, select, textarea').forEach(element => {
-      if (element.type === 'checkbox') element.checked = false;
-      else if (element.type !== 'file') element.value = '';
+  // Reset dates (auto-fill but NOT touched)
+  const today = new Date().toISOString().split('T')[0];
+  const completion = document.getElementById('completion-date');
+  const signoff = document.getElementById('signoff-date');
+  if (completion) completion.value = today;
+  if (signoff) signoff.value = today;
 
-      // clear touched flags too
-      if (element.id) element.dataset.touched = '0';
-    });
+  updateProgress();
+  if (!silent) alert('Form cleared!');
+}
 
-    for (let type in photos) {
-      photos[type] = [];
-      displayPhotos(type);
-    }
-
-    localStorage.removeItem('jcoProgress');
-    localStorage.removeItem('jcoReadyTimestamp');
-
-    // Reset dates (auto-fill but NOT touched)
-    const today = new Date().toISOString().split('T')[0];
-    const completion = document.getElementById('completion-date');
-    const signoff = document.getElementById('signoff-date');
-    if (completion) completion.value = today;
-    if (signoff) signoff.value = today;
-
-    updateProgress();
-    if (!silent) alert('Form cleared!');
-  }
-
-// Restore saved progress (no prompts, just restore if found)
-window.addEventListener('load', function() {
-  updateConnectivityStatus();
-
-  const saved = localStorage.getItem('jcoProgress');
-  if (!saved) return;
-
-  const data = JSON.parse(saved);
 
   // 1) Set base fields first (so num-inverters / num-batteries are populated)
   for (let key in data) {
@@ -1700,7 +1697,7 @@ window.addEventListener('load', function() {
     if (element.id) element.dataset.touched = '1';
   }
 
-  // 2) NOW generate dynamic fields (they didn't exist during the loop above)
+  // 2) NOW generate dynamic fields
   const invN = parseInt(data['num-inverters']) || 0;
   const batN = parseInt(data['num-batteries']) || 0;
 
@@ -1735,14 +1732,8 @@ window.addEventListener('load', function() {
 
   updateProgress();
 });
-      // Ready timestamp display
-      const readyTs = document.getElementById('ready-timestamp');
-      const savedReady = localStorage.getItem('jcoReadyTimestamp');
-      if (readyTs && savedReady) readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
 
-      updateProgress();
-    }
-  });
+
 </script>
 </body>
 </html>
