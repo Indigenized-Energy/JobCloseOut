@@ -1068,573 +1068,531 @@
         </div>
     </div>
 <script>
-  // --- Option A helpers: "touched" tracking ---
-  const markTouched = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.dataset.touched = '1';
-  };
+// ============================================
+// IndexedDB Helper (replaces localStorage)
+// ============================================
+const DB_NAME = 'JCO_Database';
+const DB_VERSION = 1;
+const STORE_NAME = 'progress';
 
-  const wasTouched = (id) => {
-    const el = document.getElementById(id);
-    return !!(el && el.dataset.touched === '1');
-  };
+let db = null;
 
-  // Set today's date on load (auto-fill, but DO NOT mark as touched)
-  document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    const completion = document.getElementById('completion-date');
-    const signoff = document.getElementById('signoff-date');
-
-    if (completion && !completion.value) completion.value = today;
-    if (signoff && !signoff.value) signoff.value = today;
-
-    updateConnectivityStatus();
-
-    // Ready-for-upload timestamp
-    const readyBox = document.getElementById('ready-for-upload');
-    const readyTs = document.getElementById('ready-timestamp');
-    if (readyBox && readyTs) {
-      const savedReady = localStorage.getItem('jcoReadyTimestamp');
-      if (savedReady) {
-        readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
-        readyBox.checked = true;
+// Initialize IndexedDB
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      db = request.result;
+      resolve(db);
+    };
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
-      readyBox.addEventListener('change', () => {
-        if (readyBox.checked) {
-          const ts = new Date().toISOString();
-          localStorage.setItem('jcoReadyTimestamp', ts);
-          readyTs.textContent = 'Marked ready on: ' + new Date(ts).toLocaleString();
-        } else {
-          localStorage.removeItem('jcoReadyTimestamp');
-          readyTs.textContent = '';
-        }
-      });
-    }
+    };
+  });
+}
 
+// Save to IndexedDB
+async function saveToIndexedDB(key, value) {
+  if (!db) await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.put({ id: key, data: value });
+    request.onsuccess = () => resolve(true);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// Load from IndexedDB
+async function loadFromIndexedDB(key) {
+  if (!db) await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.get(key);
+    request.onsuccess = () => resolve(request.result ? request.result.data : null);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// Delete from IndexedDB
+async function deleteFromIndexedDB(key) {
+  if (!db) await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([STORE_NAME], 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.delete(key);
+    request.onsuccess = () => resolve(true);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// ============================================
+// Helper Functions
+// ============================================
+const markTouched = (id) => {
+  const el = document.getElementById(id);
+  if (el) el.dataset.touched = '1';
+};
+
+const wasTouched = (id) => {
+  const el = document.getElementById(id);
+  return !!(el && el.dataset.touched === '1');
+};
+
+// Count total photos
+function getTotalPhotoCount() {
+  let total = 0;
+  for (let type in photos) {
+    total += (photos[type] || []).length;
+  }
+  return total;
+}
+
+// Update connectivity status with photo warnings
+function updateConnectivityStatus() {
+  const statusEl = document.getElementById('connectivity-status');
+  const noteEl = document.getElementById('connectivity-note');
+  if (!statusEl || !noteEl) return;
+
+  const online = navigator.onLine;
+  const photoCount = getTotalPhotoCount();
+  
+  // Connectivity status
+  statusEl.textContent = online ? 'Online' : 'Offline';
+  statusEl.className = online ? 'status-good' : 'status-warning';
+  
+  // Smart warnings based on photo count
+  if (photoCount === 0) {
+    noteEl.innerHTML = online
+      ? 'You can work offline. Downloads work either way.'
+      : 'Offline mode active. Data stays on-device until export.';
+  } else if (photoCount < 20) {
+    noteEl.innerHTML = `<strong>${photoCount} photo${photoCount !== 1 ? 's' : ''} captured.</strong> Looking good! 👍`;
+  } else if (photoCount < 30) {
+    noteEl.innerHTML = `<strong style="color: var(--warning);">${photoCount} photos captured.</strong> ⚠️ Consider exporting soon.`;
+  } else {
+    noteEl.innerHTML = `<strong style="color: #C62828;">${photoCount} photos!</strong> 🚨 Export report now to avoid data loss.`;
+  }
+}
+
+// ============================================
+// Initialize on page load
+// ============================================
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialize IndexedDB
+  await initDB();
+  
+  const today = new Date().toISOString().split('T')[0];
+  const completion = document.getElementById('completion-date');
+  const signoff = document.getElementById('signoff-date');
+
+  if (completion && !completion.value) completion.value = today;
+  if (signoff && !signoff.value) signoff.value = today;
+
+  updateConnectivityStatus();
+
+  // Ready-for-upload timestamp
+  const readyBox = document.getElementById('ready-for-upload');
+  const readyTs = document.getElementById('ready-timestamp');
+  if (readyBox && readyTs) {
+    const savedReady = await loadFromIndexedDB('jcoReadyTimestamp');
+    if (savedReady) {
+      readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
+      readyBox.checked = true;
+    }
+    readyBox.addEventListener('change', async () => {
+      if (readyBox.checked) {
+        const ts = new Date().toISOString();
+        await saveToIndexedDB('jcoReadyTimestamp', ts);
+        readyTs.textContent = 'Marked ready on: ' + new Date(ts).toLocaleString();
+      } else {
+        await deleteFromIndexedDB('jcoReadyTimestamp');
+        readyTs.textContent = '';
+      }
+    });
+  }
+
+  // Try to load saved progress
+  const saved = await loadFromIndexedDB('jcoProgress');
+  if (saved && confirm('Found saved progress. Would you like to restore it?')) {
+    await restoreProgress(saved);
+  }
+
+  updateProgress();
+});
+
+// Online/offline listeners
+window.addEventListener('online', updateConnectivityStatus);
+window.addEventListener('offline', updateConnectivityStatus);
+
+// ============================================
+// Photo Storage
+// ============================================
+const photos = {
+  'inspection': [],
+  'production-screen': [],
+  'array-overview': [],
+  'array-closeup': [],
+  'inverter': [],
+  'main-panel': [],
+  'disconnect': [],
+  'labels': [],
+  'flashing': [],
+  'battery': [],
+  'monitoring': [],
+  'additional': []
+};
+
+// ============================================
+// GPS Capture
+// ============================================
+function captureGPS() {
+  if (!navigator.geolocation) {
+    alert('GPS not supported by your browser');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const lat = position.coords.latitude.toFixed(6);
+      const lon = position.coords.longitude.toFixed(6);
+      document.getElementById('gps-coords').value = `${lat}, ${lon}`;
+      markTouched('gps-coords');
+      updateProgress();
+    },
+    function(error) {
+      alert('Unable to get location: ' + error.message);
+    }
+  );
+}
+
+// ============================================
+// Dynamic Field Generation
+// ============================================
+function generateInverterFields() {
+  const num = parseInt(document.getElementById('num-inverters').value) || 0;
+  const container = document.getElementById('inverters-container');
+  container.innerHTML = '';
+
+  if (num <= 0) {
     updateProgress();
+    return;
+  }
+
+  for (let i = 1; i <= num; i++) {
+    const inverterDiv = document.createElement('div');
+    inverterDiv.style.cssText = 'background: #FFF8E1; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #DEB887;';
+    inverterDiv.innerHTML = `
+      <h4 style="color: #8B4513; margin-bottom: 15px;">Inverter ${i}</h4>
+
+      <div class="form-group">
+        <label>Make & Model *</label>
+        <input type="text" id="inverter-${i}-model" placeholder="e.g., Enphase IQ8+" />
+      </div>
+
+      <div class="form-group">
+        <label>Serial Number</label>
+        <input type="text" id="inverter-${i}-serial" placeholder="Serial number" />
+      </div>
+
+      <div class="form-group">
+        <label>Serial Number Photo</label>
+        <button class="photo-btn" onclick="capturePhoto('inverter-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
+        <input type="file" id="inverter-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inverter-${i}-serial')">
+        <div class="photo-gallery" id="inverter-${i}-serial-gallery"></div>
+      </div>
+
+      <div class="form-group">
+        <label>Type</label>
+        <select id="inverter-${i}-type">
+          <option value="">Select type</option>
+          <option value="microinverter">Microinverter</option>
+          <option value="string">String Inverter</option>
+          <option value="hybrid">Hybrid Inverter</option>
+          <option value="optimizer">Power Optimizer</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Current Output (W)</label>
+        <input type="number" id="inverter-${i}-output" placeholder="Current power output" />
+        <small>Reading from inverter display at time of closeout</small>
+      </div>
+    `;
+    container.appendChild(inverterDiv);
+
+    if (!photos[`inverter-${i}-serial`]) photos[`inverter-${i}-serial`] = [];
+  }
+
+  updateProgress();
+}
+
+function generateBatteryFields() {
+  const num = parseInt(document.getElementById('num-batteries').value) || 0;
+  const container = document.getElementById('batteries-container');
+  container.innerHTML = '';
+
+  if (num <= 0) {
+    updateProgress();
+    return;
+  }
+
+  for (let i = 1; i <= num; i++) {
+    const batteryDiv = document.createElement('div');
+    batteryDiv.style.cssText = 'background: #F0FFF0; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #90EE90;';
+    batteryDiv.innerHTML = `
+      <h4 style="color: #2E7D32; margin-bottom: 15px;">Battery ${i}</h4>
+
+      <div class="form-group">
+        <label>Make & Model *</label>
+        <input type="text" id="battery-${i}-model" placeholder="e.g., Tesla Powerwall 2" />
+      </div>
+
+      <div class="form-group">
+        <label>Capacity (kWh)</label>
+        <input type="number" step="0.1" id="battery-${i}-capacity" placeholder="e.g., 13.5" />
+      </div>
+
+      <div class="form-group">
+        <label>Serial Number</label>
+        <input type="text" id="battery-${i}-serial" placeholder="Serial number" />
+      </div>
+
+      <div class="form-group">
+        <label>Serial Number Photo</label>
+        <button class="photo-btn" onclick="capturePhoto('battery-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
+        <input type="file" id="battery-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'battery-${i}-serial')">
+        <div class="photo-gallery" id="battery-${i}-serial-gallery"></div>
+      </div>
+    `;
+    container.appendChild(batteryDiv);
+
+    if (!photos[`battery-${i}-serial`]) photos[`battery-${i}-serial`] = [];
+  }
+
+  updateProgress();
+}
+
+// ============================================
+// UI Functions
+// ============================================
+function toggleSection(sectionId) {
+  const content = document.getElementById('content-' + sectionId);
+  if (content) content.classList.toggle('active');
+}
+
+function capturePhoto(type) {
+  const input = document.getElementById(type + '-input');
+  if (input) input.click();
+}
+
+// ============================================
+// Photo Handling
+// ============================================
+function handlePhotoUpload(event, type) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      if (!photos[type]) photos[type] = [];
+      photos[type].push({ data: e.target.result, name: file.name });
+      displayPhotos(type);
+      updateProgress();
+      updateConnectivityStatus(); // Update photo count warning
+    };
+    reader.readAsDataURL(file);
   });
 
-  // Connectivity / Offline-first status
-  function updateConnectivityStatus() {
-    const statusEl = document.getElementById('connectivity-status');
-    const noteEl = document.getElementById('connectivity-note');
-    if (!statusEl || !noteEl) return;
+  event.target.value = '';
+}
 
-    const online = navigator.onLine;
-    statusEl.textContent = online ? 'Online' : 'Offline';
-    statusEl.className = online ? 'status-good' : 'status-warning';
-    noteEl.textContent = online
-      ? 'You can still work offline. Downloads work either way.'
-      : 'You are offline. Data will stay on-device until you export/share.';
+function displayPhotos(type) {
+  const gallery = document.getElementById(type + '-gallery');
+  if (!gallery) return;
+
+  gallery.innerHTML = '';
+  (photos[type] || []).forEach((photo, index) => {
+    const item = document.createElement('div');
+    item.className = 'photo-item';
+    item.innerHTML = `
+      <img src="${photo.data}" alt="Photo ${index + 1}">
+      <button class="photo-delete" onclick="deletePhoto('${type}', ${index})">×</button>
+    `;
+    gallery.appendChild(item);
+  });
+}
+
+function deletePhoto(type, index) {
+  (photos[type] || []).splice(index, 1);
+  displayPhotos(type);
+  updateProgress();
+  updateConnectivityStatus(); // Update photo count warning
+}
+
+// ============================================
+// Progress Tracking
+// ============================================
+function updateProgress() {
+  // Section statuses (nice UX)
+  if (document.getElementById('site-name').value &&
+    document.getElementById('tribal-affiliation').value &&
+    document.getElementById('install-address').value &&
+    document.getElementById('start-date').value &&
+    document.getElementById('completion-date').value &&
+    document.getElementById('contractor-name').value) {
+    document.getElementById('status-job-info').textContent = 'Complete';
+    document.getElementById('status-job-info').classList.add('complete');
+  } else {
+    document.getElementById('status-job-info').textContent = 'Incomplete';
+    document.getElementById('status-job-info').classList.remove('complete');
   }
 
-  window.addEventListener('online', updateConnectivityStatus);
-  window.addEventListener('offline', updateConnectivityStatus);
+  if (document.getElementById('system-size').value &&
+    document.getElementById('num-panels').value &&
+    document.getElementById('panel-model').value &&
+    document.getElementById('num-inverters').value) {
+    document.getElementById('status-system-details').textContent = 'Complete';
+    document.getElementById('status-system-details').classList.add('complete');
+  } else {
+    document.getElementById('status-system-details').textContent = 'Incomplete';
+    document.getElementById('status-system-details').classList.remove('complete');
+  }
 
-  // Photo storage
-  const photos = {
-    'inspection': [],
-    'production-screen': [],
-    'array-overview': [],
-    'array-closeup': [],
-    'inverter': [],
-    'main-panel': [],
-    'disconnect': [],
-    'labels': [],
-    'flashing': [],
-    'battery': [],
-    'monitoring': [],
-    'additional': []
+  const checkboxes = document.querySelectorAll('#content-verification input[type="checkbox"]');
+  const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+  if (checkedCount >= 5) {
+    document.getElementById('status-verification').textContent = 'Complete';
+    document.getElementById('status-verification').classList.add('complete');
+  } else {
+    document.getElementById('status-verification').textContent = 'Incomplete';
+    document.getElementById('status-verification').classList.remove('complete');
+  }
+
+  if (document.getElementById('current-production').value &&
+    (photos['production-screen'] || []).length > 0) {
+    document.getElementById('status-performance').textContent = 'Complete';
+    document.getElementById('status-performance').classList.add('complete');
+  } else {
+    document.getElementById('status-performance').textContent = 'Incomplete';
+    document.getElementById('status-performance').classList.remove('complete');
+  }
+
+  if (document.getElementById('electrical-inspection').value) {
+    document.getElementById('status-inspections').textContent = 'Complete';
+    document.getElementById('status-inspections').classList.add('complete');
+  } else {
+    document.getElementById('status-inspections').textContent = 'Incomplete';
+    document.getElementById('status-inspections').classList.remove('complete');
+  }
+
+  if ((photos['array-overview'] || []).length > 0 &&
+    (photos['array-closeup'] || []).length > 0 &&
+    (photos['inverter'] || []).length > 0 &&
+    (photos['main-panel'] || []).length > 0 &&
+    (photos['labels'] || []).length > 0) {
+    document.getElementById('status-photos').textContent = 'Complete';
+    document.getElementById('status-photos').classList.add('complete');
+  } else {
+    document.getElementById('status-photos').textContent = 'Incomplete';
+    document.getElementById('status-photos').classList.remove('complete');
+  }
+
+  const monitoringChecks = document.querySelectorAll('#content-monitoring input[type="checkbox"]:checked').length;
+  if (document.getElementById('monitoring-platform').value &&
+    document.getElementById('monitoring-status').value &&
+    monitoringChecks >= 3) {
+    document.getElementById('status-monitoring').textContent = 'Complete';
+    document.getElementById('status-monitoring').classList.add('complete');
+  } else {
+    document.getElementById('status-monitoring').textContent = 'Incomplete';
+    document.getElementById('status-monitoring').classList.remove('complete');
+  }
+
+  const certChecks = document.querySelectorAll('#content-signoff input[type="checkbox"]:checked').length;
+  if (certChecks >= 5 &&
+    document.getElementById('installer-signature').value &&
+    document.getElementById('signoff-date').value) {
+    document.getElementById('status-signoff').textContent = 'Complete';
+    document.getElementById('status-signoff').classList.add('complete');
+  } else {
+    document.getElementById('status-signoff').textContent = 'Incomplete';
+    document.getElementById('status-signoff').classList.remove('complete');
+  }
+
+  // Progress bar = required items only (but date fields must be touched)
+  const required = [];
+  const hasValue = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    return (el.value !== null && el.value !== undefined && String(el.value).trim() !== '');
   };
 
-  // GPS Capture
-  function captureGPS() {
-    if (!navigator.geolocation) {
-      alert('GPS not supported by your browser');
-      return;
-    }
+  required.push(hasValue('site-name'));
+  required.push(hasValue('tribal-affiliation'));
+  required.push(hasValue('install-address'));
+  required.push(hasValue('start-date'));
+  required.push(hasValue('completion-date') && wasTouched('completion-date'));
+  required.push(hasValue('contractor-name'));
 
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        const lat = position.coords.latitude.toFixed(6);
-        const lon = position.coords.longitude.toFixed(6);
-        document.getElementById('gps-coords').value = `${lat}, ${lon}`;
-        markTouched('gps-coords');
-        updateProgress();
-      },
-      function(error) {
-        alert('Unable to get location: ' + error.message);
-      }
-    );
+  required.push(hasValue('system-size'));
+  required.push(hasValue('num-panels'));
+  required.push(hasValue('panel-model'));
+  required.push(hasValue('num-inverters'));
+
+  const invCount = parseInt(document.getElementById('num-inverters').value) || 0;
+  if (invCount > 0) {
+    for (let i = 1; i <= invCount; i++) required.push(hasValue(`inverter-${i}-model`));
   }
 
-  // Generate Inverter Fields
-  function generateInverterFields() {
-    const num = parseInt(document.getElementById('num-inverters').value) || 0;
-    const container = document.getElementById('inverters-container');
-    container.innerHTML = '';
+  required.push(hasValue('current-production'));
+  required.push((photos['production-screen'] || []).length > 0);
 
-    if (num <= 0) {
-      updateProgress();
-      return;
-    }
+  required.push(hasValue('electrical-inspection'));
 
-    for (let i = 1; i <= num; i++) {
-      const inverterDiv = document.createElement('div');
-      inverterDiv.style.cssText = 'background: #FFF8E1; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #DEB887;';
-      inverterDiv.innerHTML = `
-        <h4 style="color: #8B4513; margin-bottom: 15px;">Inverter ${i}</h4>
+  required.push((photos['array-overview'] || []).length > 0);
+  required.push((photos['array-closeup'] || []).length > 0);
+  required.push((photos['inverter'] || []).length > 0);
+  required.push((photos['main-panel'] || []).length > 0);
+  required.push((photos['labels'] || []).length > 0);
 
-        <div class="form-group">
-          <label>Make & Model *</label>
-          <input type="text" id="inverter-${i}-model" placeholder="e.g., Enphase IQ8+" />
-        </div>
+  required.push(hasValue('installer-signature'));
+  required.push(hasValue('signoff-date') && wasTouched('signoff-date'));
 
-        <div class="form-group">
-          <label>Serial Number</label>
-          <input type="text" id="inverter-${i}-serial" placeholder="Serial number" />
-        </div>
+  const requiredDone = required.filter(Boolean).length;
+  const requiredTotal = required.length;
+  const percent = requiredTotal ? Math.round((requiredDone / requiredTotal) * 100) : 0;
 
-        <div class="form-group">
-          <label>Serial Number Photo</label>
-          <button class="photo-btn" onclick="capturePhoto('inverter-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
-          <input type="file" id="inverter-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'inverter-${i}-serial')">
-          <div class="photo-gallery" id="inverter-${i}-serial-gallery"></div>
-        </div>
+  const progressFill = document.getElementById('progress-fill');
+  const progressText = document.getElementById('progress-text');
+  if (progressFill) progressFill.style.width = percent + '%';
+  if (progressText) progressText.textContent = percent + '%';
+}
 
-        <div class="form-group">
-          <label>Type</label>
-          <select id="inverter-${i}-type">
-            <option value="">Select type</option>
-            <option value="microinverter">Microinverter</option>
-            <option value="string">String Inverter</option>
-            <option value="hybrid">Hybrid Inverter</option>
-            <option value="optimizer">Power Optimizer</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Current Output (W)</label>
-          <input type="number" id="inverter-${i}-output" placeholder="Current power output" />
-          <small>Reading from inverter display at time of closeout</small>
-        </div>
-      `;
-      container.appendChild(inverterDiv);
-
-      if (!photos[`inverter-${i}-serial`]) photos[`inverter-${i}-serial`] = [];
-    }
-
+// Mark touched on user interaction
+document.querySelectorAll('input, select, textarea').forEach(el => {
+  el.addEventListener('change', () => {
+    if (el.id) el.dataset.touched = '1';
     updateProgress();
-  }
-
-  // Generate Battery Fields
-  function generateBatteryFields() {
-    const num = parseInt(document.getElementById('num-batteries').value) || 0;
-    const container = document.getElementById('batteries-container');
-    container.innerHTML = '';
-
-    if (num <= 0) {
-      updateProgress();
-      return;
-    }
-
-    for (let i = 1; i <= num; i++) {
-      const batteryDiv = document.createElement('div');
-      batteryDiv.style.cssText = 'background: #F0FFF0; padding: 20px; margin: 15px 0; border-radius: 12px; border: 2px solid #90EE90;';
-      batteryDiv.innerHTML = `
-        <h4 style="color: #2E7D32; margin-bottom: 15px;">Battery ${i}</h4>
-
-        <div class="form-group">
-          <label>Make & Model *</label>
-          <input type="text" id="battery-${i}-model" placeholder="e.g., Tesla Powerwall 2" />
-        </div>
-
-        <div class="form-group">
-          <label>Capacity (kWh)</label>
-          <input type="number" step="0.1" id="battery-${i}-capacity" placeholder="e.g., 13.5" />
-        </div>
-
-        <div class="form-group">
-          <label>Serial Number</label>
-          <input type="text" id="battery-${i}-serial" placeholder="Serial number" />
-        </div>
-
-        <div class="form-group">
-          <label>Serial Number Photo</label>
-          <button class="photo-btn" onclick="capturePhoto('battery-${i}-serial')" type="button">📷 Take Photo of Serial Number</button>
-          <input type="file" id="battery-${i}-serial-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event, 'battery-${i}-serial')">
-          <div class="photo-gallery" id="battery-${i}-serial-gallery"></div>
-        </div>
-      `;
-      container.appendChild(batteryDiv);
-
-      if (!photos[`battery-${i}-serial`]) photos[`battery-${i}-serial`] = [];
-    }
-
-    updateProgress();
-  }
-
-  // Toggle section
-  function toggleSection(sectionId) {
-    const content = document.getElementById('content-' + sectionId);
-    if (content) content.classList.toggle('active');
-  }
-
-  // Capture photo
-  function capturePhoto(type) {
-    const input = document.getElementById(type + '-input');
-    if (input) input.click();
-  }
-
-  // Handle photo upload
-  function handlePhotoUpload(event, type) {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        if (!photos[type]) photos[type] = [];
-        photos[type].push({ data: e.target.result, name: file.name });
-        displayPhotos(type);
-        updateProgress();
-      };
-      reader.readAsDataURL(file);
-    });
-
-    event.target.value = '';
-  }
-
-  // Display photos
-  function displayPhotos(type) {
-    const gallery = document.getElementById(type + '-gallery');
-    if (!gallery) return;
-
-    gallery.innerHTML = '';
-    (photos[type] || []).forEach((photo, index) => {
-      const item = document.createElement('div');
-      item.className = 'photo-item';
-      item.innerHTML = `
-        <img src="${photo.data}" alt="Photo ${index + 1}">
-        <button class="photo-delete" onclick="deletePhoto('${type}', ${index})">×</button>
-      `;
-      gallery.appendChild(item);
-    });
-  }
-
-  // Delete photo
-  function deletePhoto(type, index) {
-    (photos[type] || []).splice(index, 1);
-    displayPhotos(type);
-    updateProgress();
-  }
-
-  // Update progress
-  function updateProgress() {
-    // Section statuses (nice UX)
-    if (document.getElementById('site-name').value &&
-      document.getElementById('tribal-affiliation').value &&
-      document.getElementById('install-address').value &&
-      document.getElementById('start-date').value &&
-      document.getElementById('completion-date').value &&
-      document.getElementById('contractor-name').value) {
-      document.getElementById('status-job-info').textContent = 'Complete';
-      document.getElementById('status-job-info').classList.add('complete');
-    } else {
-      document.getElementById('status-job-info').textContent = 'Incomplete';
-      document.getElementById('status-job-info').classList.remove('complete');
-    }
-
-    if (document.getElementById('system-size').value &&
-      document.getElementById('num-panels').value &&
-      document.getElementById('panel-model').value &&
-      document.getElementById('num-inverters').value) {
-      document.getElementById('status-system-details').textContent = 'Complete';
-      document.getElementById('status-system-details').classList.add('complete');
-    } else {
-      document.getElementById('status-system-details').textContent = 'Incomplete';
-      document.getElementById('status-system-details').classList.remove('complete');
-    }
-
-    const checkboxes = document.querySelectorAll('#content-verification input[type="checkbox"]');
-    const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-    if (checkedCount >= 5) {
-      document.getElementById('status-verification').textContent = 'Complete';
-      document.getElementById('status-verification').classList.add('complete');
-    } else {
-      document.getElementById('status-verification').textContent = 'Incomplete';
-      document.getElementById('status-verification').classList.remove('complete');
-    }
-
-    if (document.getElementById('current-production').value &&
-      (photos['production-screen'] || []).length > 0) {
-      document.getElementById('status-performance').textContent = 'Complete';
-      document.getElementById('status-performance').classList.add('complete');
-    } else {
-      document.getElementById('status-performance').textContent = 'Incomplete';
-      document.getElementById('status-performance').classList.remove('complete');
-    }
-
-    if (document.getElementById('electrical-inspection').value) {
-      document.getElementById('status-inspections').textContent = 'Complete';
-      document.getElementById('status-inspections').classList.add('complete');
-    } else {
-      document.getElementById('status-inspections').textContent = 'Incomplete';
-      document.getElementById('status-inspections').classList.remove('complete');
-    }
-
-    if ((photos['array-overview'] || []).length > 0 &&
-      (photos['array-closeup'] || []).length > 0 &&
-      (photos['inverter'] || []).length > 0 &&
-      (photos['main-panel'] || []).length > 0 &&
-      (photos['labels'] || []).length > 0) {
-      document.getElementById('status-photos').textContent = 'Complete';
-      document.getElementById('status-photos').classList.add('complete');
-    } else {
-      document.getElementById('status-photos').textContent = 'Incomplete';
-      document.getElementById('status-photos').classList.remove('complete');
-    }
-
-    const monitoringChecks = document.querySelectorAll('#content-monitoring input[type="checkbox"]:checked').length;
-    if (document.getElementById('monitoring-platform').value &&
-      document.getElementById('monitoring-status').value &&
-      monitoringChecks >= 3) {
-      document.getElementById('status-monitoring').textContent = 'Complete';
-      document.getElementById('status-monitoring').classList.add('complete');
-    } else {
-      document.getElementById('status-monitoring').textContent = 'Incomplete';
-      document.getElementById('status-monitoring').classList.remove('complete');
-    }
-
-    const certChecks = document.querySelectorAll('#content-signoff input[type="checkbox"]:checked').length;
-    if (certChecks >= 5 &&
-      document.getElementById('installer-signature').value &&
-      document.getElementById('signoff-date').value) {
-      document.getElementById('status-signoff').textContent = 'Complete';
-      document.getElementById('status-signoff').classList.add('complete');
-    } else {
-      document.getElementById('status-signoff').textContent = 'Incomplete';
-      document.getElementById('status-signoff').classList.remove('complete');
-    }
-
-    // Progress bar = required items only (but date fields must be touched)
-    const required = [];
-    const hasValue = (id) => {
-      const el = document.getElementById(id);
-      if (!el) return false;
-      return (el.value !== null && el.value !== undefined && String(el.value).trim() !== '');
-    };
-
-    required.push(hasValue('site-name'));
-    required.push(hasValue('tribal-affiliation'));
-    required.push(hasValue('install-address'));
-    required.push(hasValue('start-date')); // (not auto-filled in your code)
-    required.push(hasValue('completion-date') && wasTouched('completion-date')); // requires user touch
-    required.push(hasValue('contractor-name'));
-
-    required.push(hasValue('system-size'));
-    required.push(hasValue('num-panels'));
-    required.push(hasValue('panel-model'));
-    required.push(hasValue('num-inverters'));
-
-    const invCount = parseInt(document.getElementById('num-inverters').value) || 0;
-    if (invCount > 0) {
-      for (let i = 1; i <= invCount; i++) required.push(hasValue(`inverter-${i}-model`));
-    }
-
-    required.push(hasValue('current-production'));
-    required.push((photos['production-screen'] || []).length > 0);
-
-    required.push(hasValue('electrical-inspection'));
-
-    required.push((photos['array-overview'] || []).length > 0);
-    required.push((photos['array-closeup'] || []).length > 0);
-    required.push((photos['inverter'] || []).length > 0);
-    required.push((photos['main-panel'] || []).length > 0);
-    required.push((photos['labels'] || []).length > 0);
-
-    required.push(hasValue('installer-signature'));
-    required.push(hasValue('signoff-date') && wasTouched('signoff-date')); // requires user touch
-
-    const requiredDone = required.filter(Boolean).length;
-    const requiredTotal = required.length;
-    const percent = requiredTotal ? Math.round((requiredDone / requiredTotal) * 100) : 0;
-
-    const progressFill = document.getElementById('progress-fill');
-    const progressText = document.getElementById('progress-text');
-    if (progressFill) progressFill.style.width = percent + '%';
-    if (progressText) progressText.textContent = percent + '%';
-  }
-
-  // Mark touched on user interaction, then recalc progress
-  document.querySelectorAll('input, select, textarea').forEach(el => {
-    el.addEventListener('change', () => {
-      if (el.id) el.dataset.touched = '1';
-      updateProgress();
-    });
-    el.addEventListener('input', () => {
-      if (el.id) el.dataset.touched = '1';
-      updateProgress();
-    });
   });
+  el.addEventListener('input', () => {
+    if (el.id) el.dataset.touched = '1';
+    updateProgress();
+  });
+});
 
-  // Generate report
-  function generateReport() {
-    const getVal = (id) => {
-      const el = document.getElementById(id);
-      if (!el) return '';
-      if (el.type === 'checkbox') return !!el.checked;
-      return el.value || '';
-    };
-
-    const numInv = parseInt(getVal('num-inverters')) || 0;
-    const inverters = [];
-    for (let i = 1; i <= numInv; i++) {
-      inverters.push({
-        index: i,
-        makeModel: getVal(`inverter-${i}-model`),
-        serial: getVal(`inverter-${i}-serial`),
-        type: getVal(`inverter-${i}-type`),
-        currentOutputW: getVal(`inverter-${i}-output`),
-        serialPhotos: photos[`inverter-${i}-serial`] || []
-      });
-    }
-
-    const numBat = parseInt(getVal('num-batteries')) || 0;
-    const batteries = [];
-    for (let i = 1; i <= numBat; i++) {
-      batteries.push({
-        index: i,
-        makeModel: getVal(`battery-${i}-model`),
-        capacityKWh: getVal(`battery-${i}-capacity`),
-        serial: getVal(`battery-${i}-serial`),
-        serialPhotos: photos[`battery-${i}-serial`] || []
-      });
-    }
-
-    const data = {
-      meta: {
-        exportedAt: new Date().toISOString(),
-        exportedFrom: window.location.href || '',
-        onlineAtExport: navigator.onLine
-      },
-      jobInfo: {
-        siteName: getVal('site-name'),
-        gpsCoordinates: getVal('gps-coords'),
-        tribalAffiliation: getVal('tribal-affiliation'),
-        installationAddress: getVal('install-address'),
-        cityStateZip: getVal('city-state-zip'),
-        startDate: getVal('start-date'),
-        completionDate: getVal('completion-date'),
-        contractorName: getVal('contractor-name'),
-        contractorPOC: getVal('contractor-poc'),
-        installationType: (document.querySelector('input[name="install-type"]:checked') || {}).value || ''
-      },
-      systemDetails: {
-        systemSizeKWdc: getVal('system-size'),
-        numberOfPanels: getVal('num-panels'),
-        panelMakeModel: getVal('panel-model'),
-        panelWattageEach: getVal('panel-wattage'),
-        numberOfInverters: getVal('num-inverters'),
-        inverters,
-        rackingSystem: getVal('racking-system'),
-        numberOfBatteries: getVal('num-batteries'),
-        batteries
-      },
-      monitoring: {
-        platform: getVal('monitoring-platform'),
-        setup: {
-          installedConfigured: getVal('monitoring-installed'),
-          communicating: getVal('monitoring-communicating'),
-          productionVisible: getVal('monitoring-production-visible'),
-          credentialsVerified: getVal('monitoring-login-verified'),
-          mobileAppWorking: getVal('monitoring-app-working')
-        },
-        status: getVal('monitoring-status'),
-        notes: getVal('monitoring-notes'),
-        readyForUpload: getVal('ready-for-upload'),
-        readyTimestamp: localStorage.getItem('jcoReadyTimestamp') || '',
-        uploadNotes: getVal('upload-notes')
-      },
-      verificationChecklist: {
-        panelsInstalled: getVal('check-panels-installed'),
-        invertersInstalled: getVal('check-inverters-installed'),
-        batteriesInstalled: getVal('check-batteries-installed'),
-        rackingSecure: getVal('check-racking-secure'),
-        wiringNeat: getVal('check-wiring-neat'),
-        labelsPresent: getVal('check-labels-present'),
-        systemOn: getVal('check-system-on'),
-        producing: getVal('check-producing'),
-        monitoringActive: getVal('check-monitoring-active'),
-        notes: getVal('installation-notes')
-      },
-      performance: {
-        currentProductionKW: getVal('current-production'),
-        totalEnergyKWh: getVal('total-energy'),
-        systemStatusFromMonitoring: getVal('system-status-monitoring'),
-        weatherConditions: getVal('weather-conditions'),
-        batterySOC: getVal('battery-soc'),
-        notes: getVal('performance-notes')
-      },
-      inspections: {
-        buildingPermitNumber: getVal('building-permit'),
-        electricalPermitNumber: getVal('electrical-permit'),
-        structuralStampRequired: getVal('structural-required'),
-        structuralInspectionStatus: getVal('structural-status'),
-        electricalInspectionStatus: getVal('electrical-inspection'),
-        electricalInspectionDate: getVal('inspection-date'),
-        inspectorName: getVal('inspector-name'),
-        notesCorrections: getVal('inspection-notes')
-      },
-      issuesNotes: {
-        hadIssues: getVal('had-issues'),
-        issuesDescription: getVal('issues-description'),
-        issuesResolution: getVal('issues-resolution'),
-        changeOrders: getVal('change-orders'),
-        materialsVariance: getVal('materials-variance'),
-        followupRequired: getVal('followup-required'),
-        followupDetails: getVal('followup-details'),
-        internalNotes: getVal('internal-notes')
-      },
-      signoff: {
-        certComplete: getVal('cert-complete'),
-        certCode: getVal('cert-code'),
-        certManufacturer: getVal('cert-manufacturer'),
-        certTested: getVal('cert-tested'),
-        certClean: getVal('cert-clean'),
-        leadInstallerSignature: getVal('installer-signature'),
-        signoffDate: getVal('signoff-date'),
-        totalLaborHours: getVal('labor-hours'),
-        finalComments: getVal('final-comments')
-      },
-      photos
-    };
-
-    const safeName = (getVal('site-name') || 'site').toString().trim().replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g,'');
-    const safeDate = (getVal('completion-date') || '').toString().trim() || new Date().toISOString().slice(0,10);
-    const fileName = `JCO_${safeName}_${safeDate}.json`;
-
-    const dataStr = JSON.stringify(data, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
-
-    const clearAfter = document.getElementById('clear-after-export');
-    if (clearAfter && clearAfter.checked) {
-      localStorage.removeItem('jcoProgress');
-      localStorage.removeItem('jcoReadyTimestamp');
-      try { clearForm(true); } catch(e) {}
-    }
-
-    alert('Job Close Out report generated! File downloaded.');
-  }
-
-  // Save progress
-function saveProgress() {
+// ============================================
+// Save & Export Functions
+// ============================================
+async function saveProgress() {
   const data = { timestamp: new Date().toISOString() };
 
   document.querySelectorAll('input, select, textarea').forEach(element => {
@@ -1646,21 +1604,178 @@ function saveProgress() {
   data.photos = photos;
 
   try {
-    localStorage.setItem('jcoProgress', JSON.stringify(data));
-    alert('Progress saved! You can close and return later.');
+    await saveToIndexedDB('jcoProgress', data);
+    const photoCount = getTotalPhotoCount();
+    alert(`✅ Progress saved! (${photoCount} photo${photoCount !== 1 ? 's' : ''} stored)\n\nYou can close and return later.`);
   } catch (e) {
-    alert('Save failed (likely too many photos). Please export the report instead.');
+    console.error('Save error:', e);
+    alert('❌ Save failed. Please export the report instead to avoid data loss.');
   }
-}  //
-// Clear form
-function clearForm(silent = false) {
+}
+
+function generateReport() {
+  const getVal = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return '';
+    if (el.type === 'checkbox') return !!el.checked;
+    return el.value || '';
+  };
+
+  const numInv = parseInt(getVal('num-inverters')) || 0;
+  const inverters = [];
+  for (let i = 1; i <= numInv; i++) {
+    inverters.push({
+      index: i,
+      makeModel: getVal(`inverter-${i}-model`),
+      serial: getVal(`inverter-${i}-serial`),
+      type: getVal(`inverter-${i}-type`),
+      currentOutputW: getVal(`inverter-${i}-output`),
+      serialPhotos: photos[`inverter-${i}-serial`] || []
+    });
+  }
+
+  const numBat = parseInt(getVal('num-batteries')) || 0;
+  const batteries = [];
+  for (let i = 1; i <= numBat; i++) {
+    batteries.push({
+      index: i,
+      makeModel: getVal(`battery-${i}-model`),
+      capacityKWh: getVal(`battery-${i}-capacity`),
+      serial: getVal(`battery-${i}-serial`),
+      serialPhotos: photos[`battery-${i}-serial`] || []
+    });
+  }
+
+  const data = {
+    meta: {
+      exportedAt: new Date().toISOString(),
+      exportedFrom: window.location.href || '',
+      onlineAtExport: navigator.onLine
+    },
+    jobInfo: {
+      siteName: getVal('site-name'),
+      gpsCoordinates: getVal('gps-coords'),
+      tribalAffiliation: getVal('tribal-affiliation'),
+      installationAddress: getVal('install-address'),
+      cityStateZip: getVal('city-state-zip'),
+      startDate: getVal('start-date'),
+      completionDate: getVal('completion-date'),
+      contractorName: getVal('contractor-name'),
+      contractorPOC: getVal('contractor-poc'),
+      installationType: (document.querySelector('input[name="install-type"]:checked') || {}).value || ''
+    },
+    systemDetails: {
+      systemSizeKWdc: getVal('system-size'),
+      numberOfPanels: getVal('num-panels'),
+      panelMakeModel: getVal('panel-model'),
+      panelWattageEach: getVal('panel-wattage'),
+      numberOfInverters: getVal('num-inverters'),
+      inverters,
+      rackingSystem: getVal('racking-system'),
+      numberOfBatteries: getVal('num-batteries'),
+      batteries
+    },
+    monitoring: {
+      platform: getVal('monitoring-platform'),
+      setup: {
+        installedConfigured: getVal('monitoring-installed'),
+        communicating: getVal('monitoring-communicating'),
+        productionVisible: getVal('monitoring-production-visible'),
+        credentialsVerified: getVal('monitoring-login-verified'),
+        mobileAppWorking: getVal('monitoring-app-working')
+      },
+      status: getVal('monitoring-status'),
+      notes: getVal('monitoring-notes'),
+      readyForUpload: getVal('ready-for-upload'),
+      readyTimestamp: (async () => await loadFromIndexedDB('jcoReadyTimestamp'))() || '',
+      uploadNotes: getVal('upload-notes')
+    },
+    verificationChecklist: {
+      panelsInstalled: getVal('check-panels-installed'),
+      invertersInstalled: getVal('check-inverters-installed'),
+      batteriesInstalled: getVal('check-batteries-installed'),
+      rackingSecure: getVal('check-racking-secure'),
+      wiringNeat: getVal('check-wiring-neat'),
+      labelsPresent: getVal('check-labels-present'),
+      systemOn: getVal('check-system-on'),
+      producing: getVal('check-producing'),
+      monitoringActive: getVal('check-monitoring-active'),
+      notes: getVal('installation-notes')
+    },
+    performance: {
+      currentProductionKW: getVal('current-production'),
+      totalEnergyKWh: getVal('total-energy'),
+      systemStatusFromMonitoring: getVal('system-status-monitoring'),
+      weatherConditions: getVal('weather-conditions'),
+      batterySOC: getVal('battery-soc'),
+      notes: getVal('performance-notes')
+    },
+    inspections: {
+      buildingPermitNumber: getVal('building-permit'),
+      electricalPermitNumber: getVal('electrical-permit'),
+      structuralStampRequired: getVal('structural-required'),
+      structuralInspectionStatus: getVal('structural-status'),
+      electricalInspectionStatus: getVal('electrical-inspection'),
+      electricalInspectionDate: getVal('inspection-date'),
+      inspectorName: getVal('inspector-name'),
+      notesCorrections: getVal('inspection-notes')
+    },
+    issuesNotes: {
+      hadIssues: getVal('had-issues'),
+      issuesDescription: getVal('issues-description'),
+      issuesResolution: getVal('issues-resolution'),
+      changeOrders: getVal('change-orders'),
+      materialsVariance: getVal('materials-variance'),
+      followupRequired: getVal('followup-required'),
+      followupDetails: getVal('followup-details'),
+      internalNotes: getVal('internal-notes')
+    },
+    signoff: {
+      certComplete: getVal('cert-complete'),
+      certCode: getVal('cert-code'),
+      certManufacturer: getVal('cert-manufacturer'),
+      certTested: getVal('cert-tested'),
+      certClean: getVal('cert-clean'),
+      leadInstallerSignature: getVal('installer-signature'),
+      signoffDate: getVal('signoff-date'),
+      totalLaborHours: getVal('labor-hours'),
+      finalComments: getVal('final-comments')
+    },
+    photos
+  };
+
+  const safeName = (getVal('site-name') || 'site').toString().trim().replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g,'');
+  const safeDate = (getVal('completion-date') || '').toString().trim() || new Date().toISOString().slice(0,10);
+  const fileName = `JCO_${safeName}_${safeDate}.json`;
+
+  const dataStr = JSON.stringify(data, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.click();
+
+  const clearAfter = document.getElementById('clear-after-export');
+  if (clearAfter && clearAfter.checked) {
+    clearForm(true).then(() => {
+      const photoCount = getTotalPhotoCount();
+      alert(`✅ Job Close Out report generated!\n📁 File downloaded: ${fileName}\n🗑️ Form cleared (${photoCount} photos removed)`);
+    });
+  } else {
+    const photoCount = getTotalPhotoCount();
+    alert(`✅ Job Close Out report generated!\n📁 File downloaded: ${fileName}`);
+  }
+}
+
+async function clearForm(silent = false) {
   if (!silent && !confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
 
   document.querySelectorAll('input, select, textarea').forEach(element => {
     if (element.type === 'checkbox') element.checked = false;
     else if (element.type !== 'file') element.value = '';
 
-    // clear touched flags too
     if (element.id) element.dataset.touched = '0';
   });
 
@@ -1669,8 +1784,8 @@ function clearForm(silent = false) {
     displayPhotos(type);
   }
 
-  localStorage.removeItem('jcoProgress');
-  localStorage.removeItem('jcoReadyTimestamp');
+  await deleteFromIndexedDB('jcoProgress');
+  await deleteFromIndexedDB('jcoReadyTimestamp');
 
   // Reset dates (auto-fill but NOT touched)
   const today = new Date().toISOString().split('T')[0];
@@ -1680,11 +1795,15 @@ function clearForm(silent = false) {
   if (signoff) signoff.value = today;
 
   updateProgress();
+  updateConnectivityStatus();
   if (!silent) alert('Form cleared!');
 }
 
-
-  // 1) Set base fields first (so num-inverters / num-batteries are populated)
+// ============================================
+// Restore Progress
+// ============================================
+async function restoreProgress(data) {
+  // 1) Set base fields first
   for (let key in data) {
     const element = document.getElementById(key);
     if (!element) continue;
@@ -1692,18 +1811,17 @@ function clearForm(silent = false) {
     if (element.type === 'checkbox') element.checked = !!data[key];
     else if (element.type !== 'file') element.value = data[key];
 
-    // restored values came from user, so treat as touched
     if (element.id) element.dataset.touched = '1';
   }
 
-  // 2) NOW generate dynamic fields
+  // 2) Generate dynamic fields
   const invN = parseInt(data['num-inverters']) || 0;
   const batN = parseInt(data['num-batteries']) || 0;
 
   if (invN > 0) generateInverterFields();
   if (batN > 0) generateBatteryFields();
 
-  // 3) Re-apply saved values again, so dynamic IDs get filled too
+  // 3) Re-apply saved values to dynamic fields
   for (let key in data) {
     const element = document.getElementById(key);
     if (!element) continue;
@@ -1724,15 +1842,14 @@ function clearForm(silent = false) {
 
   // Ready timestamp display
   const readyTs = document.getElementById('ready-timestamp');
-  const savedReady = localStorage.getItem('jcoReadyTimestamp');
+  const savedReady = await loadFromIndexedDB('jcoReadyTimestamp');
   if (readyTs && savedReady) {
     readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
   }
 
   updateProgress();
-});
-
-
+  updateConnectivityStatus();
+}
 </script>
 </body>
 </html>
