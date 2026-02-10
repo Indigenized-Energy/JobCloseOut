@@ -1679,32 +1679,62 @@
     if (!silent) alert('Form cleared!');
   }
 
-  // Restore saved progress (no prompts, just restore if found)
-  window.addEventListener('load', function() {
-    updateConnectivityStatus();
+// Restore saved progress (no prompts, just restore if found)
+window.addEventListener('load', function() {
+  updateConnectivityStatus();
 
-    const saved = localStorage.getItem('jcoProgress');
-    if (saved) {
-      const data = JSON.parse(saved);
+  const saved = localStorage.getItem('jcoProgress');
+  if (!saved) return;
 
-      for (let key in data) {
-        const element = document.getElementById(key);
-        if (!element) continue;
+  const data = JSON.parse(saved);
 
-        if (element.type === 'checkbox') element.checked = !!data[key];
-        else if (element.type !== 'file') element.value = data[key];
+  // 1) Set base fields first (so num-inverters / num-batteries are populated)
+  for (let key in data) {
+    const element = document.getElementById(key);
+    if (!element) continue;
 
-        // restored values came from user, so treat as touched
-        if (element.id) element.dataset.touched = '1';
-      }
+    if (element.type === 'checkbox') element.checked = !!data[key];
+    else if (element.type !== 'file') element.value = data[key];
 
-      if (data.photos) {
-        for (let type in data.photos) {
-          photos[type] = data.photos[type] || [];
-          displayPhotos(type);
-        }
-      }
+    // restored values came from user, so treat as touched
+    if (element.id) element.dataset.touched = '1';
+  }
 
+  // 2) NOW generate dynamic fields (they didn't exist during the loop above)
+  const invN = parseInt(data['num-inverters']) || 0;
+  const batN = parseInt(data['num-batteries']) || 0;
+
+  if (invN > 0) generateInverterFields();
+  if (batN > 0) generateBatteryFields();
+
+  // 3) Re-apply saved values again, so dynamic IDs get filled too
+  for (let key in data) {
+    const element = document.getElementById(key);
+    if (!element) continue;
+
+    if (element.type === 'checkbox') element.checked = !!data[key];
+    else if (element.type !== 'file') element.value = data[key];
+
+    if (element.id) element.dataset.touched = '1';
+  }
+
+  // 4) Restore photos
+  if (data.photos) {
+    for (let type in data.photos) {
+      photos[type] = data.photos[type] || [];
+      displayPhotos(type);
+    }
+  }
+
+  // Ready timestamp display
+  const readyTs = document.getElementById('ready-timestamp');
+  const savedReady = localStorage.getItem('jcoReadyTimestamp');
+  if (readyTs && savedReady) {
+    readyTs.textContent = 'Marked ready on: ' + new Date(savedReady).toLocaleString();
+  }
+
+  updateProgress();
+});
       // Ready timestamp display
       const readyTs = document.getElementById('ready-timestamp');
       const savedReady = localStorage.getItem('jcoReadyTimestamp');
@@ -1714,9 +1744,6 @@
     }
   });
 </script>
-
-   
-
 </body>
 </html>
 
