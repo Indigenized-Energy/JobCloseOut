@@ -1067,8 +1067,7 @@
             <button class="btn-export btn-clear" onclick="clearForm()" type="button">🗑️ Clear Form</button>
         </div>
     </div>
-
-    <script>
+<script>
   // --- Option A helpers: "touched" tracking ---
   const markTouched = (id) => {
     const el = document.getElementById(id);
@@ -1084,11 +1083,9 @@
   document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     const completion = document.getElementById('completion-date');
-    const signature = document.getElementById('signature-date');
     const signoff = document.getElementById('signoff-date');
 
     if (completion && !completion.value) completion.value = today;
-    if (signature && !signature.value) signature.value = today;
     if (signoff && !signoff.value) signoff.value = today;
 
     updateConnectivityStatus();
@@ -1432,7 +1429,7 @@
     required.push(hasValue('tribal-affiliation'));
     required.push(hasValue('install-address'));
     required.push(hasValue('start-date')); // (not auto-filled in your code)
-    required.push(hasValue('completion-date') && wasTouched('completion-date')); // 👈 key change
+    required.push(hasValue('completion-date') && wasTouched('completion-date')); // requires user touch
     required.push(hasValue('contractor-name'));
 
     required.push(hasValue('system-size'));
@@ -1456,10 +1453,8 @@
     required.push((photos['main-panel'] || []).length > 0);
     required.push((photos['labels'] || []).length > 0);
 
-
-
     required.push(hasValue('installer-signature'));
-    required.push(hasValue('signoff-date') && wasTouched('signoff-date')); // 👈 key change
+    required.push(hasValue('signoff-date') && wasTouched('signoff-date')); // requires user touch
 
     const requiredDone = required.filter(Boolean).length;
     const requiredTotal = required.length;
@@ -1676,10 +1671,8 @@
     // Reset dates (auto-fill but NOT touched)
     const today = new Date().toISOString().split('T')[0];
     const completion = document.getElementById('completion-date');
-    const signature = document.getElementById('signature-date');
     const signoff = document.getElementById('signoff-date');
     if (completion) completion.value = today;
-    if (signature) signature.value = today;
     if (signoff) signoff.value = today;
 
     updateProgress();
@@ -1721,6 +1714,8 @@
     }
   });
 </script>
+
+   
 
 </body>
 </html>
