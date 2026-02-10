@@ -908,120 +908,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Customer Handoff -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection('customer-handoff')">
-                <div class="section-title">🤝 Customer Handoff</div>
-                <div class="section-status" id="status-customer-handoff">Incomplete</div>
-            </div>
-            <div class="section-content" id="content-customer-handoff">
-                <div class="info-box">
-                    <strong>Customer Training & Documentation</strong>
-                    Ensure customer understands system operation
-                </div>
-
-                <div class="form-group">
-                    <label>Customer Training Completed</label>
-                    <div class="checkbox-group" style="display: block;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="training-system-operation">
-                            <label for="training-system-operation">System operation explained</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="training-monitoring">
-                            <label for="training-monitoring">Monitoring app/portal demonstrated</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="training-shutoff">
-                            <label for="training-shutoff">Shutdown procedures explained</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="training-maintenance">
-                            <label for="training-maintenance">Maintenance requirements explained</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="training-warranty">
-                            <label for="training-warranty">Warranty information provided</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Documents Provided to Customer</label>
-                    <div class="checkbox-group" style="display: block;">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="doc-manual">
-                            <label for="doc-manual">System manuals (panels, inverter, battery)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="doc-warranty">
-                            <label for="doc-warranty">Warranty documentation</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="doc-permits">
-                            <label for="doc-permits">Copy of permits and inspections</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="doc-asbuilt">
-                            <label for="doc-asbuilt">As-built drawings (if applicable)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="doc-monitoring">
-                            <label for="doc-monitoring">Monitoring system login info</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="doc-contact">
-                            <label for="doc-contact">Indigenized Energy contact information</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Monitoring System Login</label>
-                    <input type="text" id="monitoring-login" placeholder="Username/email for monitoring access">
-                </div>
-
-                <div class="form-group">
-                    <label>System Producing at Handoff?</label>
-                    <select id="system-producing">
-                        <option value="">Select</option>
-                        <option value="yes">Yes - System Live</option>
-                        <option value="pto-pending">No - Awaiting PTO</option>
-                        <option value="inspection-pending">No - Awaiting Inspection</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Customer Satisfaction</label>
-                    <select id="customer-satisfaction">
-                        <option value="">Select</option>
-                        <option value="very-satisfied">Very Satisfied</option>
-                        <option value="satisfied">Satisfied</option>
-                        <option value="neutral">Neutral</option>
-                        <option value="concerns">Had Concerns</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Customer Feedback/Comments</label>
-                    <textarea id="customer-feedback" placeholder="Any feedback from customer about the installation..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Customer Signature *</label>
-                    <input type="text" id="customer-signature" placeholder="Customer name (digital signature)">
-                    <small>Customer acknowledges system handoff and training completion</small>
-                </div>
-
-                <div class="form-group">
-                    <label>Customer Signature Date</label>
-                    <input type="date" id="signature-date">
-                </div>
-            </div>
-        </div>
-
-        <!-- Issues & Notes -->
+            <!-- Issues & Notes -->
         <div class="section">
             <div class="section-header" onclick="toggleSection('issues')">
                 <div class="section-title">⚠️ Issues & Notes</div>
@@ -1522,17 +1409,6 @@
       document.getElementById('status-monitoring').classList.remove('complete');
     }
 
-    const trainingChecks = document.querySelectorAll('#content-customer-handoff input[type="checkbox"]:checked').length;
-    if (trainingChecks >= 5 &&
-      document.getElementById('customer-signature').value &&
-      document.getElementById('system-producing').value) {
-      document.getElementById('status-customer-handoff').textContent = 'Complete';
-      document.getElementById('status-customer-handoff').classList.add('complete');
-    } else {
-      document.getElementById('status-customer-handoff').textContent = 'Incomplete';
-      document.getElementById('status-customer-handoff').classList.remove('complete');
-    }
-
     const certChecks = document.querySelectorAll('#content-signoff input[type="checkbox"]:checked').length;
     if (certChecks >= 5 &&
       document.getElementById('installer-signature').value &&
@@ -1580,8 +1456,7 @@
     required.push((photos['main-panel'] || []).length > 0);
     required.push((photos['labels'] || []).length > 0);
 
-    required.push(hasValue('customer-signature'));
-    required.push(hasValue('system-producing'));
+
 
     required.push(hasValue('installer-signature'));
     required.push(hasValue('signoff-date') && wasTouched('signoff-date')); // 👈 key change
@@ -1716,8 +1591,7 @@
         inspectorName: getVal('inspector-name'),
         notesCorrections: getVal('inspection-notes')
       },
-      customerHandoff: {
-        training: {
+           training: {
           systemOperationExplained: getVal('training-system-operation'),
           monitoringDemonstrated: getVal('training-monitoring'),
           shutdownExplained: getVal('training-shutoff'),
